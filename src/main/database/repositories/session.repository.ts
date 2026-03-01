@@ -1,5 +1,6 @@
 import { BaseRepository } from './base.repository'
-import type { Session, CheckInDto, CheckOutDto, TariffSnapshot } from '@shared/types/db'
+import type { Session, CheckInDto, CheckOutDto, TariffSnapshot, SyncStatus } from '@shared/types/db'
+import { nowIso } from '@shared/utils/time'
 
 export class SessionRepository extends BaseRepository {
   findById(id: string): Session | undefined {
@@ -37,7 +38,7 @@ export class SessionRepository extends BaseRepository {
   }
 
   checkIn(dto: CheckInDto, snapshot: TariffSnapshot): Session {
-    const now = new Date().toISOString()
+    const now = nowIso()
 
     this.db
       .prepare(`
@@ -52,7 +53,7 @@ export class SessionRepository extends BaseRepository {
   }
 
   checkOut(dto: CheckOutDto): Session | undefined {
-    const now = new Date().toISOString()
+    const now = nowIso()
 
     this.db
       .prepare(`
@@ -70,16 +71,16 @@ export class SessionRepository extends BaseRepository {
   }
 
   markSynced(id: string): void {
-    const now = new Date().toISOString()
-    this.db
-      .prepare("UPDATE sessions SET sync_status = 'synced', updated_at = ? WHERE id = ?")
-      .run(now, id)
+    this.updateSyncStatus(id, 'synced')
   }
 
   markSyncError(id: string): void {
-    const now = new Date().toISOString()
+    this.updateSyncStatus(id, 'error')
+  }
+
+  private updateSyncStatus(id: string, status: SyncStatus): void {
     this.db
-      .prepare("UPDATE sessions SET sync_status = 'error', updated_at = ? WHERE id = ?")
-      .run(now, id)
+      .prepare('UPDATE sessions SET sync_status = ?, updated_at = ? WHERE id = ?')
+      .run(status, nowIso(), id)
   }
 }

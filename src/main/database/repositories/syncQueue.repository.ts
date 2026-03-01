@@ -1,9 +1,10 @@
 import { BaseRepository } from './base.repository'
 import type { SyncQueueEntry } from '@shared/types/db'
+import { nowIso } from '@shared/utils/time'
 
 export class SyncQueueRepository extends BaseRepository {
   enqueue(sessionId: string, payload: string): SyncQueueEntry {
-    const now = new Date().toISOString()
+    const now = nowIso()
     const result = this.db
       .prepare(`
         INSERT INTO sync_queue (session_id, payload, attempts, created_at, updated_at)
@@ -11,7 +12,7 @@ export class SyncQueueRepository extends BaseRepository {
       `)
       .run(sessionId, payload, now, now)
 
-    return this.findById(result.lastInsertRowid as number)!
+    return this.findById(Number(result.lastInsertRowid))!
   }
 
   findById(id: number): SyncQueueEntry | undefined {
@@ -27,7 +28,7 @@ export class SyncQueueRepository extends BaseRepository {
   }
 
   incrementAttempts(id: number, error: string | null): void {
-    const now = new Date().toISOString()
+    const now = nowIso()
     this.db
       .prepare(
         'UPDATE sync_queue SET attempts = attempts + 1, last_error = ?, updated_at = ? WHERE id = ?',

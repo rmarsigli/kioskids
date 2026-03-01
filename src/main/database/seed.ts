@@ -1,4 +1,5 @@
 import type Database from 'better-sqlite3'
+import { nowIso } from '@shared/utils/time'
 
 const DEFAULT_TARIFF = {
   name: 'Padrão',
@@ -20,7 +21,7 @@ export function seedDefaultTariff(db: Database.Database): void {
   const { n } = db.prepare('SELECT COUNT(*) as n FROM tariffs').get() as CountRow
   if (n > 0) return
 
-  const now = new Date().toISOString()
+  const now = nowIso()
 
   db.prepare(`
     INSERT INTO tariffs

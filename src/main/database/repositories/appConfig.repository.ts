@@ -1,5 +1,6 @@
 import { BaseRepository } from './base.repository'
 import type { AppConfig } from '@shared/types/db'
+import { nowIso } from '@shared/utils/time'
 
 export class AppConfigRepository extends BaseRepository {
   get(key: string): string | undefined {
@@ -11,7 +12,7 @@ export class AppConfigRepository extends BaseRepository {
   }
 
   set(key: string, value: string): void {
-    const now = new Date().toISOString()
+    const now = nowIso()
     this.db
       .prepare(`
         INSERT INTO app_config (key, value, updated_at)

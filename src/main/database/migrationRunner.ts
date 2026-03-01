@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync } from 'fs'
 import { join } from 'path'
 import type Database from 'better-sqlite3'
+import { nowIso } from '@shared/utils/time'
 
 // Default path resolved relative to the compiled output directory.
 // Tests override this by passing `migrationsDir` explicitly.
@@ -56,7 +57,7 @@ export function runMigrations(db: Database.Database, migrationsDir?: string): vo
 
     db.transaction(() => {
       db.exec(sql)
-      insertRecord.run(file, new Date().toISOString())
+      insertRecord.run(file, nowIso())
     })()
   }
 }

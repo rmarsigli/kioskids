@@ -1,5 +1,6 @@
 import { BaseRepository } from './base.repository'
 import type { Tariff } from '@shared/types/db'
+import { nowIso } from '@shared/utils/time'
 
 export class TariffRepository extends BaseRepository {
   findAll(): Tariff[] {
@@ -21,7 +22,7 @@ export class TariffRepository extends BaseRepository {
   }
 
   create(data: Omit<Tariff, 'id' | 'created_at' | 'updated_at'>): Tariff {
-    const now = new Date().toISOString()
+    const now = nowIso()
     const result = this.db
       .prepare(`
         INSERT INTO tariffs
@@ -38,14 +39,14 @@ export class TariffRepository extends BaseRepository {
         now,
       )
 
-    return this.findById(result.lastInsertRowid as number)!
+    return this.findById(Number(result.lastInsertRowid))!
   }
 
   update(id: number, data: Partial<Omit<Tariff, 'id' | 'created_at'>>): Tariff | undefined {
     const existing = this.findById(id)
     if (!existing) return undefined
 
-    const now = new Date().toISOString()
+    const now = nowIso()
     const merged: Tariff = { ...existing, ...data, updated_at: now }
 
     this.db

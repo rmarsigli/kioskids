@@ -33,6 +33,14 @@ export interface TariffSnapshot {
   rounding_minutes: number
 }
 
+/**
+ * Type-safe parse of a `Session.tariff_snapshot` JSON string.
+ * Use this instead of bare `JSON.parse` to keep callers honest.
+ */
+export function parseTariffSnapshot(raw: string): TariffSnapshot {
+  return JSON.parse(raw) as TariffSnapshot
+}
+
 // ---------------------------------------------------------------------------
 // Session
 // ---------------------------------------------------------------------------
