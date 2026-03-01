@@ -1,15 +1,31 @@
-appId: br.com.kioskids
+appId: "br.com.kioskids"
 productName: KiosKids
 copyright: Copyright (C) 2026 Rafhael Marsigli
 
 directories:
   output: dist
-  buildResources: resources
 
 files:
   - out/**/*
   - node_modules/**/*
   - package.json
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  artifactName: ${productName}-${version}-setup.${ext}
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: false
+
+publish:
+  provider: github
+  releaseType: release
+
 
 win:
   target:
