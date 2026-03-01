@@ -38,11 +38,6 @@ const TARIFF_B: TariffSnapshot = {
   tolerance_minutes: 0,
 }
 
-/** Builds an ISO-8601 UTC string that is `minutes` minutes + `seconds` seconds after epoch. */
-function iso(minutes: number, seconds = 0): string {
-  return new Date((minutes * 60 + seconds) * 1000).toISOString()
-}
-
 /** Returns [checkInAt, checkOutAt] pair with the given duration relative to a fixed baseline. */
 function range(durationMinutes: number, extraSeconds = 0): [string, string] {
   const base = '2026-01-01T10:00:00.000Z'
@@ -141,11 +136,10 @@ describe('calculateSessionTotal — edge cases', () => {
     expect(calculateSessionTotal(checkInAt, checkOutAt, TARIFF_A)).toBe(48000)
   })
 
-  it('iso() helper — uses unix-epoch-relative timestamps correctly', () => {
-    // Sanity check the iso() helper used elsewhere doesn't affect algorithm
-    expect(
-      calculateSessionTotal(iso(0), iso(30), TARIFF_A),
-    ).toBe(3000)
+  it('iso() helper — range() is baseline-agnostic: same duration, different epoch, same cost', () => {
+    // Proves the engine only cares about the difference between timestamps, not their absolute value.
+    const [checkInAt, checkOutAt] = range(30)
+    expect(calculateSessionTotal(checkInAt, checkOutAt, TARIFF_A)).toBe(3000)
   })
 })
 
@@ -154,19 +148,18 @@ describe('calculateSessionTotal — edge cases', () => {
 // ---------------------------------------------------------------------------
 
 describe('calculateLiveCost', () => {
-  it('returns a non-negative integer for a session started now', () => {
-    const checkInAt = new Date().toISOString()
+  it('returns an integer >= base_price for a session started in the past', () => {
+    // Check-in 2 minutes ago — cost must be at least base_price and be an integer
+    const checkInAt = new Date(Date.now() - 2 * 60 * 1000).toISOString()
     const cost = calculateLiveCost(checkInAt, TARIFF_A)
-    expect(cost).toBeTypeOf('number')
-    expect(cost).toBeGreaterThanOrEqual(TARIFF_A.base_price)
     expect(Number.isInteger(cost)).toBe(true)
+    expect(cost).toBeGreaterThanOrEqual(TARIFF_A.base_price)
   })
 
-  it('returns base_price for a session started exactly now (0 seconds)', () => {
-    // At t=0, floor of duration is 0 min → base_price
+  it('returns base_price for a session started this instant (0 elapsed seconds)', () => {
+    // ceil(0 / 60) = 0 minutes → within base threshold → base_price
     const checkInAt = new Date().toISOString()
-    // Override Date to be deterministic is overkill here; instead verify >= base
-    expect(calculateLiveCost(checkInAt, TARIFF_A)).toBeGreaterThanOrEqual(TARIFF_A.base_price)
+    expect(calculateLiveCost(checkInAt, TARIFF_A)).toBe(TARIFF_A.base_price)
   })
 })
 

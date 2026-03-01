@@ -2,7 +2,7 @@
 // Used by Main (repositories) and exposed to Renderer through IPC result types.
 // No `any` allowed — all JSON fields are typed through dedicated interfaces.
 
-import { TariffSnapshotSchema, type TariffSnapshot } from '@shared/utils/tariff-engine'
+import { TariffSnapshotSchema } from '@shared/utils/tariff-engine'
 
 export type SessionStatus = 'open' | 'closed'
 export type SyncStatus = 'pending' | 'synced' | 'error'
@@ -35,8 +35,8 @@ export interface Tariff {
  * Type-safe parse of a `Session.tariff_snapshot` JSON string.
  * Uses Zod for runtime validation — throws ZodError on malformed data.
  */
-export function parseTariffSnapshot(raw: string): TariffSnapshot {
-  return TariffSnapshotSchema.parse(JSON.parse(raw)) as TariffSnapshot
+export function parseTariffSnapshot(raw: string): ReturnType<typeof TariffSnapshotSchema.parse> {
+  return TariffSnapshotSchema.parse(JSON.parse(raw))
 }
 
 // ---------------------------------------------------------------------------
