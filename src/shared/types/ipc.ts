@@ -1,19 +1,17 @@
-// IPC channel name constants.
-// Convention: domain:action — enforced across all ipcMain.handle / ipcRenderer.invoke calls.
-// This file lives in src/shared so both Main and Renderer import the exact same string values.
+// Re-export shim — canonical definitions have moved to dedicated files.
+// Prefer importing directly from the canonical paths in new code:
+//   import { IPC }        from '@shared/constants/ipc-channels'
+//   import { IpcResult }  from '@shared/types/result'
+export { IPC, IpcChannel } from '@shared/constants/ipc-channels'
+export { IpcResult } from '@shared/types/result'
 
+// Backward-compat flat alias — kept so existing tests compile without changes.
+// Do not add new consumers; use IPC.DB.*, IPC.HW.*, IPC.APP.* instead.
+import { IPC } from '@shared/constants/ipc-channels'
 export const IPC_CHANNELS = {
-  DB_GET_TARIFFS: 'db:get-tariffs',
-  DB_CHECK_IN: 'db:check-in',
-  DB_CHECK_OUT: 'db:check-out',
-  DB_GET_SESSIONS: 'db:get-sessions',
-  HW_PRINT_RECEIPT: 'hw:print-receipt',
+  DB_GET_TARIFFS: IPC.DB.GET_TARIFFS,
+  DB_CHECK_IN: IPC.DB.CHECK_IN,
+  DB_CHECK_OUT: IPC.DB.CHECK_OUT,
+  DB_GET_SESSIONS: IPC.DB.GET_SESSIONS,
+  HW_PRINT_RECEIPT: IPC.HW.PRINT_RECEIPT,
 } as const
-
-export type IpcChannel = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS]
-
-// Standard envelope returned by every ipcMain.handle.
-// Errors are serialized here — raw Node errors must never cross the bridge.
-export type IpcResult<T> =
-  | { success: true; data: T }
-  | { success: false; error: string; code: string }

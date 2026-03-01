@@ -2,6 +2,7 @@ import { app, BrowserWindow, shell } from 'electron'
 import { join } from 'path'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { initDatabase, closeDatabase } from './database'
+import { registerIpcHandlers } from './ipc'
 
 function createWindow(): void {
   const win = new BrowserWindow({
@@ -40,6 +41,9 @@ app.whenReady().then(() => {
   // Initialise SQLite database (migrations + seed) synchronously before the
   // window loads — guarantees the DB is ready for all IPC handlers.
   initDatabase()
+
+  // Register all ipcMain.handle listeners after DB is ready.
+  registerIpcHandlers()
 
   // F12 toggles DevTools in dev; ignores all shortcuts in prod
   app.on('browser-window-created', (_, window) => {
