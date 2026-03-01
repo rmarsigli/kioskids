@@ -47,6 +47,8 @@ export function parseTariffSnapshot(raw: string): ReturnType<typeof TariffSnapsh
 export interface Session {
   id: string                     // UUID v4
   child_name: string
+  guardian_name: string | null   // added in migration 002 — required from TASK-008 onwards
+  guardian_contact: string | null // phone/WhatsApp, added in migration 002
   tariff_id: number
   tariff_snapshot: string        // JSON.stringify(TariffSnapshot)
   checked_in_at: string          // UTC ISO-8601
@@ -60,9 +62,16 @@ export interface Session {
 }
 
 export interface CheckInDto {
-  id: string           // caller provides the UUID
+  id: string              // caller provides the UUID
   child_name: string
+  guardian_name?: string  // required from TASK-008; nullable here for backwards compat
+  guardian_contact?: string
   tariff_id: number
+}
+
+/** Payload the Renderer sends to close a session. Main sets the timestamp. */
+export interface CheckOutRequestDto {
+  id: string  // UUID of the open session to close
 }
 
 export interface CheckOutDto {

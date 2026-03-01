@@ -1,13 +1,75 @@
 import { ipcMain } from 'electron'
+import { z } from 'zod'
 import { IPC } from '@shared/constants/ipc-channels'
 import type { IpcResult } from '@shared/types/result'
-import type { Tariff } from '@shared/types/db'
+import type { Tariff, Session } from '@shared/types/db'
+import { parseTariffSnapshot } from '@shared/types/db'
 import { SaveTariffSchema } from '@shared/utils/tariff-schema'
-import { TariffRepository } from '../database'
+import { calculateSessionTotal } from '@shared/utils/tariff-engine'
+import { nowIso } from '@shared/utils/time'
+import { TariffRepository, SessionRepository } from '../database'
 
 const tariffRepo = new TariffRepository()
+const sessionRepo = new SessionRepository()
+
+/** Zod schema for the checkout request coming from the Renderer. */
+const CheckoutRequestSchema = z.object({ id: z.string().uuid() })
 
 export function registerDbHandlers(): void {
+  // Returns all open sessions — used by the live dashboard.
+  ipcMain.handle(IPC.DB.GET_ACTIVE_SESSIONS, (): IpcResult<Session[]> => {
+    try {
+      return { success: true, data: sessionRepo.findOpen() }
+    } catch (err) {
+      return { success: false, error: String(err), code: 'DB_ERROR' }
+    }
+  })
+
+  // Closes a session: Main sets the timestamp, calculates totals from the stored snapshot.
+  ipcMain.handle(
+    IPC.DB.CHECKOUT_SESSION,
+    (_, dto: unknown): IpcResult<Session> => {
+      const parsed = CheckoutRequestSchema.safeParse(dto)
+      if (!parsed.success) {
+        return { success: false, error: 'ID de sessao invalido.', code: 'VALIDATION_ERROR' }
+      }
+
+      const { id } = parsed.data
+
+      try {
+        const session = sessionRepo.findById(id)
+        if (!session) {
+          return { success: false, error: 'Sessao nao encontrada.', code: 'NOT_FOUND' }
+        }
+        if (session.status !== 'open') {
+          return { success: false, error: 'Sessao ja encerrada.', code: 'SESSION_CLOSED' }
+        }
+
+        const tariff = parseTariffSnapshot(session.tariff_snapshot)
+        const checkedOutAt = nowIso()
+        const durationMs =
+          new Date(checkedOutAt).getTime() - new Date(session.checked_in_at).getTime()
+        const durationMinutes = Math.ceil(durationMs / 60_000)
+        const totalCents = calculateSessionTotal(session.checked_in_at, checkedOutAt, tariff)
+
+        const closed = sessionRepo.checkOut({
+          id,
+          checked_out_at: checkedOutAt,
+          duration_minutes: durationMinutes,
+          total_cents: totalCents,
+        })
+
+        if (!closed) {
+          return { success: false, error: 'Sessao nao encontrada.', code: 'NOT_FOUND' }
+        }
+
+        return { success: true, data: closed }
+      } catch (err) {
+        return { success: false, error: String(err), code: 'DB_ERROR' }
+      }
+    },
+  )
+
   // Returns active tariffs only — used by the check-in dropdown.
   ipcMain.handle(IPC.DB.GET_TARIFFS, (): IpcResult<Tariff[]> => {
     try {

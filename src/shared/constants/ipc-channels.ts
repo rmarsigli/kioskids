@@ -11,7 +11,9 @@ export const IPC = {
     DEACTIVATE_TARIFF: 'db:deactivate-tariff',
     CHECK_IN: 'db:check-in',
     CHECK_OUT: 'db:check-out',
+    CHECKOUT_SESSION: 'db:checkout-session',   // closes an open session from the dashboard
     GET_SESSIONS: 'db:get-sessions',
+    GET_ACTIVE_SESSIONS: 'db:get-active-sessions', // returns only open sessions
   },
   HW: {
     PRINT_RECEIPT: 'hw:print-receipt',
