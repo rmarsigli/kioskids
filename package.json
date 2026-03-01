@@ -1,0 +1,15 @@
+{
+  "name": "kioskids",
+  "version": "1.0.0",
+  "description": "A simple Electron app for kids entertainment stores",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rafhael Marsigli",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "electron": "^40.6.1"
+  }
+}
