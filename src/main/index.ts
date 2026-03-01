@@ -1,6 +1,7 @@
 import { app, BrowserWindow, shell } from 'electron'
 import { join } from 'path'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
+import { initDatabase, closeDatabase } from './database'
 
 function createWindow(): void {
   const win = new BrowserWindow({
@@ -36,6 +37,10 @@ function createWindow(): void {
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('br.com.kioskids')
 
+  // Initialise SQLite database (migrations + seed) synchronously before the
+  // window loads — guarantees the DB is ready for all IPC handlers.
+  initDatabase()
+
   // F12 toggles DevTools in dev; ignores all shortcuts in prod
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
@@ -54,4 +59,8 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+})
+
+app.on('will-quit', () => {
+  closeDatabase()
 })
