@@ -134,7 +134,7 @@ export function SessionsPage(): React.JSX.Element {
             <li key={session.id}>
               <SessionCard
                 session={session}
-                onCheckOut={(id) => void handleCheckOut(id)}
+                onCheckOut={handleCheckOut}
                 onNotify={handleNotify}
                 isCheckingOut={checkingOut.has(session.id)}
               />

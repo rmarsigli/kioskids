@@ -59,15 +59,13 @@ export function useSessionTimer(
   }, [checkInAt])
 
   // 60-second tick — recalculates billing cost.
+  // `tariff` is referentially stable because SessionCard memoises parseTariffSnapshot.
   useEffect((): (() => void) => {
     const id = setInterval((): void => {
       setLiveCost(calculateLiveCost(checkInAt, tariff))
     }, 60_000)
     return () => clearInterval(id)
-    // tariff is a stable JSON-parsed object captured at check-in; stringify used
-    // to prevent re-running on every parent render cycle.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checkInAt, JSON.stringify(tariff)])
+  }, [checkInAt, tariff])
 
   const elapsedMinutes = Math.ceil(elapsedSeconds / 60)
   const isOverTolerance = elapsedMinutes > tariff.base_minutes + tariff.tolerance_minutes

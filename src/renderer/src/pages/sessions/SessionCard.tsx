@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { parseTariffSnapshot } from '@shared/types/db'
-import { formatRs } from '@shared/utils/currency'
 import type { Session } from '@shared/types/db'
+import { formatRs } from '@shared/utils/currency'
 import { cn } from '../../lib/cn'
 import { Button } from '../../components/ui/Button'
 import { useSessionTimer } from '../../hooks/useSessionTimer'
@@ -28,7 +28,12 @@ function SessionCardInner({
   onNotify,
   isCheckingOut = false,
 }: SessionCardProps): React.JSX.Element {
-  const tariff = parseTariffSnapshot(session.tariff_snapshot)
+  // Memoised: tariff_snapshot is an immutable string captured at check-in.
+  // Parsing only re-runs when the session row itself changes (i.e., never while open).
+  const tariff = useMemo(
+    () => parseTariffSnapshot(session.tariff_snapshot),
+    [session.tariff_snapshot],
+  )
   const { elapsedDisplay, isOverTolerance, liveCost } = useSessionTimer(
     session.checked_in_at,
     tariff,
