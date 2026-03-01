@@ -1,8 +1,11 @@
+import { ElectronAPI } from '@electron-toolkit/preload'
+
 // Augments the global Window interface with the contextBridge API surface.
-// Keep this in sync with src/preload/index.ts.
-// The full typed surface will be expanded in TASK-003 (IPC Foundation).
-interface Window {
-  api: {
-    version: string
+// window.electron — standard IPC utilities from @electron-toolkit/preload
+// window.api     — domain-specific API surface, typed and expanded in TASK-003
+declare global {
+  interface Window {
+    electron: ElectronAPI
+    api: Record<string, never>
   }
 }
