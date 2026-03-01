@@ -19,6 +19,9 @@ app-builds/
 .project/data.db-shm
 .project/data.db-wal
 
+# aipim local scripts
+.project/scripts/
+
 # os
 .DS_Store
 Thumbs.db
