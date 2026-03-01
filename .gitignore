@@ -1,0 +1,36 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+out/
+release/
+
+# electron-builder
+app-builds/
+
+# environment
+.env
+.env.*
+!.env.example
+
+# aipim local database (event log is source of truth, db is derived)
+.project/data.db
+.project/data.db-shm
+.project/data.db-wal
+
+# os
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode/settings.json
+.idea/
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# typescript
+*.tsbuildinfo
