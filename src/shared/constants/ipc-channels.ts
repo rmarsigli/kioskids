@@ -6,6 +6,9 @@
 export const IPC = {
   DB: {
     GET_TARIFFS: 'db:get-tariffs',
+    GET_ALL_TARIFFS: 'db:get-all-tariffs',
+    SAVE_TARIFF: 'db:save-tariff',
+    DEACTIVATE_TARIFF: 'db:deactivate-tariff',
     CHECK_IN: 'db:check-in',
     CHECK_OUT: 'db:check-out',
     GET_SESSIONS: 'db:get-sessions',

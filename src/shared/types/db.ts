@@ -9,6 +9,7 @@ export type SyncStatus = 'pending' | 'synced' | 'error'
 
 // Re-export so consumers that import from db.ts don't need a second import path.
 export type { TariffSnapshot } from '@shared/utils/tariff-engine'
+export type { SaveTariffDto } from '@shared/utils/tariff-schema'
 
 // ---------------------------------------------------------------------------
 // Tariff

@@ -2,13 +2,19 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import { IPC } from '@shared/constants/ipc-channels'
 import type { IpcResult } from '@shared/types/result'
-import type { Tariff, AppConfig } from '@shared/types/db'
+import type { Tariff, AppConfig, SaveTariffDto } from '@shared/types/db'
 
 // Domain-scoped API wrappers. Each method is a thin invoke() call — no logic
 // should live here. The renderer calls these and interprets the IpcResult<T>.
 const dbApi = {
   getTariffs: (): Promise<IpcResult<Tariff[]>> =>
     ipcRenderer.invoke(IPC.DB.GET_TARIFFS),
+  getAllTariffs: (): Promise<IpcResult<Tariff[]>> =>
+    ipcRenderer.invoke(IPC.DB.GET_ALL_TARIFFS),
+  saveTariff: (dto: SaveTariffDto): Promise<IpcResult<Tariff>> =>
+    ipcRenderer.invoke(IPC.DB.SAVE_TARIFF, dto),
+  deactivateTariff: (id: number): Promise<IpcResult<void>> =>
+    ipcRenderer.invoke(IPC.DB.DEACTIVATE_TARIFF, id),
 }
 
 const hwApi = {

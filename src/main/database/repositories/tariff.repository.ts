@@ -1,5 +1,5 @@
 import { BaseRepository } from './base.repository'
-import type { Tariff } from '@shared/types/db'
+import type { Tariff, SaveTariffDto } from '@shared/types/db'
 import { nowIso } from '@shared/utils/time'
 
 export class TariffRepository extends BaseRepository {
@@ -42,6 +42,31 @@ export class TariffRepository extends BaseRepository {
       )
 
     return this.findById(Number(result.lastInsertRowid))!
+  }
+
+  /**
+   * Upsert: delegates to `create` when `data.id` is absent, `update` otherwise.
+   * The caller is responsible for Zod-validating `data` before calling this.
+   */
+  save(data: SaveTariffDto): Tariff {
+    if (data.id !== undefined) {
+      const updated = this.update(data.id, data)
+      if (!updated) throw new Error(`Tariff ${data.id} not found`)
+      return updated
+    }
+    return this.create(data)
+  }
+
+  /**
+   * Soft-delete: sets is_active = 0. Returns true when a row was changed.
+   * Business rule "cannot deactivate last active tariff" is enforced in the
+   * IPC handler — not here — so the repository stays free of policy logic.
+   */
+  deactivate(id: number): boolean {
+    const result = this.db
+      .prepare('UPDATE tariffs SET is_active = 0, updated_at = ? WHERE id = ?')
+      .run(nowIso(), id)
+    return result.changes > 0
   }
 
   update(id: number, data: Partial<Omit<Tariff, 'id' | 'created_at'>>): Tariff | undefined {
