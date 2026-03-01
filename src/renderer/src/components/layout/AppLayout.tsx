@@ -1,6 +1,5 @@
 import React from 'react'
-import { Link, useRouterState } from '@tanstack/react-router'
-import { Outlet } from '@tanstack/react-router'
+import { Link, Outlet } from '@tanstack/react-router'
 
 interface NavItem {
   to: string
@@ -47,22 +46,21 @@ const NAV_ITEMS: NavItem[] = [
   },
 ]
 
-function SidebarNavItem({ item }: { item: NavItem }): React.JSX.Element {
-  const routerState = useRouterState()
-  const isActive = routerState.location.pathname.startsWith(item.to)
+const NAV_LINK_BASE =
+  'flex min-h-[3rem] items-center gap-3 rounded-kiosk px-3 py-2 text-sm font-medium ' +
+  'transition-colors duration-150 outline-none ' +
+  'focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50 ' +
+  'text-surface-700 hover:bg-surface-200 hover:text-surface-900 active:bg-surface-300'
 
+function SidebarNavItem({ item }: { item: NavItem }): React.JSX.Element {
   return (
     <Link
       to={item.to}
-      aria-current={isActive ? 'page' : undefined}
-      className={[
-        'flex min-h-[3rem] items-center gap-3 rounded-kiosk px-3 py-2 text-sm font-medium',
-        'transition-colors duration-150 outline-none',
-        'focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50',
-        isActive
-          ? 'bg-brand-500/20 text-brand-300'
-          : 'text-surface-700 hover:bg-surface-200 hover:text-surface-900 active:bg-surface-300',
-      ].join(' ')}
+      // TanStack Router injects aria-current and activeProps natively — no useRouterState needed
+      activeProps={{ 'aria-current': 'page' as const }}
+      activeOptions={{ exact: false }}
+      className={NAV_LINK_BASE}
+      activeClassName="bg-brand-500/20 text-brand-300 hover:bg-brand-500/30 hover:text-brand-300"
     >
       <span aria-hidden="true">{item.icon}</span>
       {item.label}

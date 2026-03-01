@@ -1,4 +1,5 @@
 import React from 'react'
+import { cn } from '../../lib/cn'
 
 type SpinnerSize = 'sm' | 'md' | 'lg'
 
@@ -23,7 +24,7 @@ export function Spinner({
     <span
       role="status"
       aria-label={label}
-      className={['inline-block animate-spin rounded-full border-brand-400 border-t-transparent', sizeClasses[size], className].join(' ')}
+      className={cn('inline-block animate-spin rounded-full border-brand-400 border-t-transparent', sizeClasses[size], className)}
     />
   )
 }

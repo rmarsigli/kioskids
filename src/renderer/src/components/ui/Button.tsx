@@ -1,4 +1,5 @@
 import React from 'react'
+import { cn } from '../../lib/cn'
 
 type ButtonVariant = 'primary' | 'danger' | 'ghost'
 type ButtonSize = 'sm' | 'md' | 'lg'
@@ -40,7 +41,7 @@ export function Button({
     <button
       {...props}
       disabled={isDisabled}
-      className={[
+      className={cn(
         'inline-flex items-center justify-center gap-2 rounded-kiosk font-semibold',
         'transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
         'focus-visible:ring-offset-surface-100 cursor-pointer select-none',
@@ -48,7 +49,7 @@ export function Button({
         variantClasses[variant],
         sizeClasses[size],
         className,
-      ].join(' ')}
+      )}
     >
       {loading && (
         <span

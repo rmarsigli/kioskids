@@ -1,4 +1,5 @@
 import React from 'react'
+import { cn } from '../../lib/cn'
 
 interface EmptyStateProps {
   icon?: React.ReactNode
@@ -17,10 +18,7 @@ export function EmptyState({
 }: EmptyStateProps): React.JSX.Element {
   return (
     <div
-      className={[
-        'flex flex-col items-center justify-center gap-4 px-6 py-16 text-center',
-        className,
-      ].join(' ')}
+      className={cn('flex flex-col items-center justify-center gap-4 px-6 py-16 text-center', className)}
     >
       {icon && (
         <span className="flex h-16 w-16 items-center justify-center rounded-full bg-surface-200 text-surface-600">
