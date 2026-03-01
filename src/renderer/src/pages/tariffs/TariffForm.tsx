@@ -63,8 +63,47 @@ function fromTariff(tariff: Tariff): FormValues {
 }
 
 // ---------------------------------------------------------------------------
-// Micro-components — CurrencyInput, NumberInput, Field
+// Micro-components — TextInput, CurrencyInput, NumberInput, Field
 // ---------------------------------------------------------------------------
+
+// Union of FormValues keys whose value type is `string`.
+type StringField = { [K in keyof FormValues]: FormValues[K] extends string ? K : never }[keyof FormValues]
+// Union of FormValues keys whose value type is `boolean`.
+type BooleanField = { [K in keyof FormValues]: FormValues[K] extends boolean ? K : never }[keyof FormValues]
+
+interface TextInputProps {
+  id: string
+  value: string
+  onChange: (value: string) => void
+  onBlur?: () => void
+  error?: string
+  placeholder?: string
+}
+
+function TextInput({
+  id,
+  value,
+  onChange,
+  onBlur,
+  error,
+  placeholder,
+}: TextInputProps): React.JSX.Element {
+  return (
+    <input
+      id={id}
+      type="text"
+      value={value}
+      placeholder={placeholder}
+      onChange={(e) => onChange(e.target.value)}
+      onBlur={onBlur}
+      className={cn(
+        'w-full rounded-kiosk border bg-surface-100 px-3 py-2 text-base text-surface-900',
+        'outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-1',
+        error ? 'border-danger-500' : 'border-surface-300',
+      )}
+    />
+  )
+}
 
 interface CurrencyInputProps {
   id: string
@@ -184,9 +223,14 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
   const [errors, setErrors] = useState<FormErrors>({})
   const [submitting, setSubmitting] = useState(false)
 
-  const set =
-    (field: keyof FormValues) =>
-    (value: string | boolean): void =>
+  const setStr =
+    (field: StringField) =>
+    (value: string): void =>
+      setValues((prev) => ({ ...prev, [field]: value }))
+
+  const setBool =
+    (field: BooleanField) =>
+    (value: boolean): void =>
       setValues((prev) => ({ ...prev, [field]: value }))
 
   const validateField = (field: keyof FormValues): void => {
@@ -218,7 +262,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
 
     setSubmitting(true)
     try {
-      const result = await window.api.db.saveTariff(parsed.data as SaveTariffDto)
+      const result = await window.api.db.saveTariff(parsed.data)
       if (result.success) {
         toast.success(tariff ? 'Tarifa atualizada.' : 'Tarifa criada.')
         onSuccess(result.data)
@@ -238,17 +282,12 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
 
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 pt-2">
         <Field label="Nome" htmlFor="tf-name" error={errors.name}>
-          <input
+          <TextInput
             id="tf-name"
-            type="text"
             value={values.name}
-            onChange={(e) => set('name')(e.target.value)}
+            onChange={setStr('name')}
             onBlur={() => validateField('name')}
-            className={cn(
-              'w-full rounded-kiosk border bg-surface-100 px-3 py-2 text-base text-surface-900',
-              'outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-1',
-              errors.name ? 'border-danger-500' : 'border-surface-300',
-            )}
+            error={errors.name}
           />
         </Field>
 
@@ -257,7 +296,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
             <CurrencyInput
               id="tf-base-price"
               value={values.base_price}
-              onChange={set('base_price') as (v: string) => void}
+              onChange={setStr('base_price')}
               onBlur={() => validateField('base_price')}
               error={errors.base_price}
             />
@@ -272,7 +311,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
               id="tf-base-minutes"
               min={1}
               value={values.base_minutes}
-              onChange={set('base_minutes') as (v: string) => void}
+              onChange={setStr('base_minutes')}
               onBlur={() => validateField('base_minutes')}
               error={errors.base_minutes}
             />
@@ -286,7 +325,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
             <CurrencyInput
               id="tf-frac-price"
               value={values.additional_fraction_price}
-              onChange={set('additional_fraction_price') as (v: string) => void}
+              onChange={setStr('additional_fraction_price')}
               onBlur={() => validateField('additional_fraction_price')}
               error={errors.additional_fraction_price}
             />
@@ -301,7 +340,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
               id="tf-frac-minutes"
               min={1}
               value={values.additional_fraction_minutes}
-              onChange={set('additional_fraction_minutes') as (v: string) => void}
+              onChange={setStr('additional_fraction_minutes')}
               onBlur={() => validateField('additional_fraction_minutes')}
               error={errors.additional_fraction_minutes}
             />
@@ -316,7 +355,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
               id="tf-tolerance"
               min={0}
               value={values.tolerance_minutes}
-              onChange={set('tolerance_minutes') as (v: string) => void}
+              onChange={setStr('tolerance_minutes')}
               onBlur={() => validateField('tolerance_minutes')}
               error={errors.tolerance_minutes}
             />
@@ -327,7 +366,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
           <input
             type="checkbox"
             checked={values.is_active}
-            onChange={(e) => set('is_active')(e.target.checked)}
+            onChange={(e) => setBool('is_active')(e.target.checked)}
             className="h-5 w-5 accent-brand-500"
           />
           <span className="text-sm font-medium text-surface-800">Tarifa ativa</span>

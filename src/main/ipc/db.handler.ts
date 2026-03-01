@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron'
 import { IPC } from '@shared/constants/ipc-channels'
 import type { IpcResult } from '@shared/types/result'
-import type { Tariff, SaveTariffDto } from '@shared/types/db'
+import type { Tariff } from '@shared/types/db'
 import { SaveTariffSchema } from '@shared/utils/tariff-schema'
 import { TariffRepository } from '../database'
 
@@ -39,7 +39,7 @@ export function registerDbHandlers(): void {
         }
       }
       try {
-        return { success: true, data: tariffRepo.save(parsed.data as SaveTariffDto) }
+        return { success: true, data: tariffRepo.save(parsed.data) }
       } catch (err) {
         return { success: false, error: String(err), code: 'DB_ERROR' }
       }

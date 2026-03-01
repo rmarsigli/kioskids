@@ -16,13 +16,16 @@ export function TariffsPage(): React.JSX.Element {
   const [deactivatingId, setDeactivatingId] = useState<number | null>(null)
 
   const loadTariffs = useCallback(async (): Promise<void> => {
-    const result = await window.api.db.getAllTariffs()
-    if (result.success) {
-      setTariffs(result.data)
-    } else {
-      toast.error(`Erro ao carregar tarifas: ${result.error}`)
+    try {
+      const result = await window.api.db.getAllTariffs()
+      if (result.success) {
+        setTariffs(result.data)
+      } else {
+        toast.error(`Erro ao carregar tarifas: ${result.error}`)
+      }
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }, [])
 
   useEffect(() => {

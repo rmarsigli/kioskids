@@ -13,7 +13,9 @@
  */
 export function rsToCents(value: string): number {
   const cleaned = value.replace(/R\$\s*/g, '').trim()
-  const normalized = cleaned.replace('.', '').replace(',', '.')
+  // Replace ALL thousand-separator dots before swapping decimal comma to dot.
+  // Without /g, "1.234,50" would only drop the first dot → wrong result.
+  const normalized = cleaned.replace(/\./g, '').replace(',', '.')
   const parsed = parseFloat(normalized)
   if (isNaN(parsed) || parsed < 0) return 0
   return Math.round(parsed * 100)
