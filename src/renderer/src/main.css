@@ -1,3 +1,64 @@
-/* Tailwind v4 — CSS-first config. No tailwind.config.js needed.
-   Customise design tokens via @theme { ... } below. */
+/* Tailwind v4 — CSS-first config. No tailwind.config.js needed. */
 @import "tailwindcss";
+
+@theme {
+  /* Brand */
+  --color-brand-50: #f0f4ff;
+  --color-brand-100: #dce6ff;
+  --color-brand-200: #b9cdff;
+  --color-brand-300: #84a8ff;
+  --color-brand-400: #4d7dfa;
+  --color-brand-500: #2557f0;
+  --color-brand-600: #1a40d6;
+  --color-brand-700: #1632ad;
+  --color-brand-800: #182c8c;
+  --color-brand-900: #192970;
+
+  /* Surface (dark neutrals) */
+  --color-surface-0: #0d0f17;
+  --color-surface-50: #131620;
+  --color-surface-100: #181c2a;
+  --color-surface-200: #1e2336;
+  --color-surface-300: #252c42;
+  --color-surface-400: #2e3650;
+  --color-surface-500: #3c4666;
+  --color-surface-600: #57648f;
+  --color-surface-700: #7a8db5;
+  --color-surface-800: #a8b5d1;
+  --color-surface-900: #d4daf0;
+
+  /* Danger */
+  --color-danger-400: #f87171;
+  --color-danger-500: #ef4444;
+  --color-danger-600: #dc2626;
+  --color-danger-700: #b91c1c;
+
+  /* Warning */
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+
+  /* Success */
+  --color-success-400: #4ade80;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+
+  /* Radii */
+  --radius-kiosk: 0.75rem;
+
+  /* Minimum kiosk touch target */
+  --size-touch: 3rem;
+}
+
+/* Global kiosk baseline */
+html,
+body,
+#root {
+  min-width: 1280px;
+  min-height: 800px;
+  overflow-x: hidden;
+  background-color: var(--color-surface-0);
+  color: var(--color-surface-900);
+}
+
