@@ -3,14 +3,16 @@
 -- not per migration. Each migration is wrapped in a transaction by the runner.
 
 CREATE TABLE IF NOT EXISTS tariffs (
-  id                   INTEGER PRIMARY KEY AUTOINCREMENT,
-  name                 TEXT    NOT NULL,
-  price_per_minute     INTEGER NOT NULL CHECK (price_per_minute >= 0),
-  grace_period_minutes INTEGER NOT NULL DEFAULT 0 CHECK (grace_period_minutes >= 0),
-  rounding_minutes     INTEGER NOT NULL DEFAULT 1 CHECK (rounding_minutes >= 1),
-  is_active            INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
-  created_at           TEXT    NOT NULL,
-  updated_at           TEXT    NOT NULL
+  id                          INTEGER PRIMARY KEY AUTOINCREMENT,
+  name                        TEXT    NOT NULL,
+  base_price                  INTEGER NOT NULL CHECK (base_price >= 0),
+  base_minutes                INTEGER NOT NULL CHECK (base_minutes >= 1),
+  additional_fraction_price   INTEGER NOT NULL CHECK (additional_fraction_price >= 0),
+  additional_fraction_minutes INTEGER NOT NULL CHECK (additional_fraction_minutes >= 1),
+  tolerance_minutes           INTEGER NOT NULL DEFAULT 0 CHECK (tolerance_minutes >= 0),
+  is_active                   INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
+  created_at                  TEXT    NOT NULL,
+  updated_at                  TEXT    NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sessions (

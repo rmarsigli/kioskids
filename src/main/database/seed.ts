@@ -1,11 +1,15 @@
 import type Database from 'better-sqlite3'
 import { nowIso } from '@shared/utils/time'
 
+// Default tariff: R$30,00 for 30 min + R$1,00 per additional minute, 5 min tolerance.
+// Mirrors the primary worked example in .project/docs/tariff-engine.md.
 const DEFAULT_TARIFF = {
   name: 'Padrão',
-  price_per_minute: 50,      // R$0,50/min in cents
-  grace_period_minutes: 0,
-  rounding_minutes: 1,
+  base_price: 3000,
+  base_minutes: 30,
+  additional_fraction_price: 100,
+  additional_fraction_minutes: 1,
+  tolerance_minutes: 5,
   is_active: 1,
 } as const
 
@@ -25,13 +29,15 @@ export function seedDefaultTariff(db: Database.Database): void {
 
   db.prepare(`
     INSERT INTO tariffs
-      (name, price_per_minute, grace_period_minutes, rounding_minutes, is_active, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+      (name, base_price, base_minutes, additional_fraction_price, additional_fraction_minutes, tolerance_minutes, is_active, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     DEFAULT_TARIFF.name,
-    DEFAULT_TARIFF.price_per_minute,
-    DEFAULT_TARIFF.grace_period_minutes,
-    DEFAULT_TARIFF.rounding_minutes,
+    DEFAULT_TARIFF.base_price,
+    DEFAULT_TARIFF.base_minutes,
+    DEFAULT_TARIFF.additional_fraction_price,
+    DEFAULT_TARIFF.additional_fraction_minutes,
+    DEFAULT_TARIFF.tolerance_minutes,
     DEFAULT_TARIFF.is_active,
     now,
     now,

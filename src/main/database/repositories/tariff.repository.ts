@@ -26,14 +26,16 @@ export class TariffRepository extends BaseRepository {
     const result = this.db
       .prepare(`
         INSERT INTO tariffs
-          (name, price_per_minute, grace_period_minutes, rounding_minutes, is_active, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+          (name, base_price, base_minutes, additional_fraction_price, additional_fraction_minutes, tolerance_minutes, is_active, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       `)
       .run(
         data.name,
-        data.price_per_minute,
-        data.grace_period_minutes,
-        data.rounding_minutes,
+        data.base_price,
+        data.base_minutes,
+        data.additional_fraction_price,
+        data.additional_fraction_minutes,
+        data.tolerance_minutes,
         data.is_active,
         now,
         now,
@@ -52,15 +54,18 @@ export class TariffRepository extends BaseRepository {
     this.db
       .prepare(`
         UPDATE tariffs
-           SET name = ?, price_per_minute = ?, grace_period_minutes = ?,
-               rounding_minutes = ?, is_active = ?, updated_at = ?
+           SET name = ?, base_price = ?, base_minutes = ?,
+               additional_fraction_price = ?, additional_fraction_minutes = ?,
+               tolerance_minutes = ?, is_active = ?, updated_at = ?
          WHERE id = ?
       `)
       .run(
         merged.name,
-        merged.price_per_minute,
-        merged.grace_period_minutes,
-        merged.rounding_minutes,
+        merged.base_price,
+        merged.base_minutes,
+        merged.additional_fraction_price,
+        merged.additional_fraction_minutes,
+        merged.tolerance_minutes,
         merged.is_active,
         merged.updated_at,
         id,

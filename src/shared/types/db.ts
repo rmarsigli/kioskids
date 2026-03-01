@@ -2,43 +2,41 @@
 // Used by Main (repositories) and exposed to Renderer through IPC result types.
 // No `any` allowed — all JSON fields are typed through dedicated interfaces.
 
+import { TariffSnapshotSchema, type TariffSnapshot } from '@shared/utils/tariff-engine'
+
 export type SessionStatus = 'open' | 'closed'
 export type SyncStatus = 'pending' | 'synced' | 'error'
+
+// Re-export so consumers that import from db.ts don't need a second import path.
+export type { TariffSnapshot } from '@shared/utils/tariff-engine'
 
 // ---------------------------------------------------------------------------
 // Tariff
 // ---------------------------------------------------------------------------
 
+/**
+ * Full DB row for a tariff. Mirrors the `tariffs` table columns.
+ * See tariff-engine.md for field semantics.
+ */
 export interface Tariff {
   id: number
   name: string
-  price_per_minute: number       // integer cents (e.g. 50 = R$0,50/min)
-  grace_period_minutes: number   // free minutes at start of session
-  rounding_minutes: number       // round billable time up to nearest N minutes
-  is_active: 0 | 1               // SQLite boolean
-  created_at: string             // UTC ISO-8601
+  base_price: number                  // integer cents — price for first base_minutes
+  base_minutes: number                // how many minutes the base price covers
+  additional_fraction_price: number   // integer cents — price per fraction of extra time
+  additional_fraction_minutes: number // size of each fraction unit in minutes (>= 1)
+  tolerance_minutes: number           // grace window after base_minutes before extra billing
+  is_active: 0 | 1                    // SQLite boolean
+  created_at: string                  // UTC ISO-8601
   updated_at: string
 }
 
 /**
- * Immutable snapshot of a Tariff captured at session check-in.
- * Stored as JSON TEXT in sessions.tariff_snapshot.
- * Enables correct server-side audit even if the tariff changes later.
- */
-export interface TariffSnapshot {
-  id: number
-  name: string
-  price_per_minute: number
-  grace_period_minutes: number
-  rounding_minutes: number
-}
-
-/**
  * Type-safe parse of a `Session.tariff_snapshot` JSON string.
- * Use this instead of bare `JSON.parse` to keep callers honest.
+ * Uses Zod for runtime validation — throws ZodError on malformed data.
  */
 export function parseTariffSnapshot(raw: string): TariffSnapshot {
-  return JSON.parse(raw) as TariffSnapshot
+  return TariffSnapshotSchema.parse(JSON.parse(raw)) as TariffSnapshot
 }
 
 // ---------------------------------------------------------------------------

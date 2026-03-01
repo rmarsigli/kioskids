@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { randomUUID } from 'crypto'
 import type { Tariff, TariffSnapshot } from '@shared/types/db'
+import { calculateSessionTotal } from '@shared/utils/tariff-engine'
 import { join } from 'path'
 import { openDatabase, closeDatabase, getDb } from '../connection'
 import { runMigrations } from '../migrationRunner'
@@ -110,9 +111,11 @@ describe('TariffRepository', () => {
     const repo = new TariffRepository()
     const created = repo.create({
       name: 'VIP',
-      price_per_minute: 100,
-      grace_period_minutes: 5,
-      rounding_minutes: 5,
+      base_price: 5000,
+      base_minutes: 60,
+      additional_fraction_price: 200,
+      additional_fraction_minutes: 5,
+      tolerance_minutes: 0,
       is_active: 1,
     })
     expect(created.id).toBeTypeOf('number')
@@ -122,9 +125,9 @@ describe('TariffRepository', () => {
   it('should update an existing tariff', () => {
     const repo = new TariffRepository()
     const original = repo.findAll()[0]
-    const updated = repo.update(original.id, { name: 'Atualizado', price_per_minute: 75 })
+    const updated = repo.update(original.id, { name: 'Atualizado', base_price: 4000 })
     expect(updated?.name).toBe('Atualizado')
-    expect(updated?.price_per_minute).toBe(75)
+    expect(updated?.base_price).toBe(4000)
   })
 
   it('should return undefined when updating a non-existent tariff', () => {
@@ -149,9 +152,11 @@ describe('SessionRepository', () => {
       snapshot: {
         id: tariff.id,
         name: tariff.name,
-        price_per_minute: tariff.price_per_minute,
-        grace_period_minutes: tariff.grace_period_minutes,
-        rounding_minutes: tariff.rounding_minutes,
+        base_price: tariff.base_price,
+        base_minutes: tariff.base_minutes,
+        additional_fraction_price: tariff.additional_fraction_price,
+        additional_fraction_minutes: tariff.additional_fraction_minutes,
+        tolerance_minutes: tariff.tolerance_minutes,
       },
       tariff,
     }
@@ -190,48 +195,49 @@ describe('SessionRepository', () => {
   })
 
   it('should calculate local fractional pricing when offline', () => {
-    // Rule: ceil((duration - grace) / rounding) * rounding * price_per_minute
-    // Tariff: 50 cents/min, 5 min grace, 5 min rounding
-    // Input: 13 min → 13-5=8 billable → ceil(8/5)*5=10 → 10*50=500 cents
+    // Tariff: R$30 / 30 min + R$1 per additional minute, 0 tolerance
+    // Session: 36 minutes → additional = 36-30 = 6 → 6 fractions @ R$1 = R$36 (3600 cents)
     const repo = new TariffRepository()
     const tariff = repo.create({
       name: 'Test',
-      price_per_minute: 50,
-      grace_period_minutes: 5,
-      rounding_minutes: 5,
+      base_price: 3000,
+      base_minutes: 30,
+      additional_fraction_price: 100,
+      additional_fraction_minutes: 1,
+      tolerance_minutes: 0,
       is_active: 1,
     })
 
-    const rawMinutes = 13
-    const billable =
-      Math.ceil(
-        Math.max(0, rawMinutes - tariff.grace_period_minutes) / tariff.rounding_minutes,
-      ) * tariff.rounding_minutes
+    const snapshot: TariffSnapshot = {
+      id: tariff.id,
+      name: tariff.name,
+      base_price: tariff.base_price,
+      base_minutes: tariff.base_minutes,
+      additional_fraction_price: tariff.additional_fraction_price,
+      additional_fraction_minutes: tariff.additional_fraction_minutes,
+      tolerance_minutes: tariff.tolerance_minutes,
+    }
 
-    const totalCents = billable * tariff.price_per_minute
+    // 36 exact minutes — no seconds rounding needed
+    const checkInAt = '2026-01-01T10:00:00.000Z'
+    const checkOutAt = '2026-01-01T10:36:00.000Z'
+    const totalCents = calculateSessionTotal(checkInAt, checkOutAt, snapshot)
 
-    expect(totalCents).toBe(500)
+    expect(totalCents).toBe(3600)
 
     const sessionRepo = new SessionRepository()
     const session = sessionRepo.checkIn(
       { id: randomUUID(), child_name: 'Test', tariff_id: tariff.id },
-      {
-        id: tariff.id,
-        name: tariff.name,
-        price_per_minute: tariff.price_per_minute,
-        grace_period_minutes: tariff.grace_period_minutes,
-        rounding_minutes: tariff.rounding_minutes,
-      },
+      snapshot,
     )
-
     const checkedOut = sessionRepo.checkOut({
       id: session.id,
-      checked_out_at: new Date().toISOString(),
-      duration_minutes: rawMinutes,
+      checked_out_at: checkOutAt,
+      duration_minutes: 36,
       total_cents: totalCents,
     })
 
-    expect(checkedOut?.total_cents).toBe(500)
+    expect(checkedOut?.total_cents).toBe(3600)
   })
 
   it('should not close a session that is already closed', () => {
@@ -276,9 +282,11 @@ describe('SyncQueueRepository', () => {
       {
         id: tariff.id,
         name: tariff.name,
-        price_per_minute: tariff.price_per_minute,
-        grace_period_minutes: tariff.grace_period_minutes,
-        rounding_minutes: tariff.rounding_minutes,
+        base_price: tariff.base_price,
+        base_minutes: tariff.base_minutes,
+        additional_fraction_price: tariff.additional_fraction_price,
+        additional_fraction_minutes: tariff.additional_fraction_minutes,
+        tolerance_minutes: tariff.tolerance_minutes,
       },
     )
     sessionRepo.checkOut({
