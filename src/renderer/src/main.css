@@ -1,0 +1,3 @@
+/* Tailwind v4 — CSS-first config. No tailwind.config.js needed.
+   Customise design tokens via @theme { ... } below. */
+@import "tailwindcss";
