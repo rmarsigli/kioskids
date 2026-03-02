@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { parseTariffSnapshot } from '@shared/types/db'
 import type { Session } from '@shared/types/db'
 import { formatRs } from '@shared/utils/currency'
@@ -28,6 +29,7 @@ function SessionCardInner({
   onNotify,
   isCheckingOut = false,
 }: SessionCardProps): React.JSX.Element {
+  const { t } = useTranslation()
   // Memoised: tariff_snapshot is an immutable string captured at check-in.
   // Parsing only re-runs when the session row itself changes (i.e., never while open).
   const tariff = useMemo(
@@ -41,7 +43,7 @@ function SessionCardInner({
 
   return (
     <article
-      aria-label={`Sessao de ${session.child_name}`}
+      aria-label={t('sessionCard.sessionAriaLabel', { name: session.child_name })}
       className={cn(
         'flex flex-col gap-4 rounded-2xl border bg-surface-50 p-5 shadow-sm',
         isOverTolerance
@@ -60,10 +62,10 @@ function SessionCardInner({
 
         {isOverTolerance && (
           <span
-            aria-label="Tempo excedido — cobrança adicional em andamento"
+            aria-label={t('sessionCard.overToleranceAriaLabel')}
             className="shrink-0 rounded-full bg-warning-100 px-2.5 py-0.5 text-xs font-semibold text-warning-700"
           >
-            Tempo extra
+            {t('sessionCard.overToleranceBadge')}
           </span>
         )}
       </header>
@@ -71,7 +73,7 @@ function SessionCardInner({
       {/* Elapsed + live cost */}
       <div className="flex items-baseline justify-between gap-4">
         <span
-          aria-label={`Tempo decorrido: ${elapsedDisplay}`}
+          aria-label={t('sessionCard.elapsedAriaLabel', { elapsed: elapsedDisplay })}
           className={cn(
             'font-mono text-3xl font-extrabold tabular-nums leading-none',
             isOverTolerance ? 'text-warning-700' : 'text-surface-800',
@@ -81,7 +83,7 @@ function SessionCardInner({
         </span>
 
         <span
-          aria-label={`Custo atual: ${formatRs(liveCost)}`}
+          aria-label={t('sessionCard.costAriaLabel', { cost: formatRs(liveCost) })}
           className="text-xl font-semibold text-surface-700"
         >
           {formatRs(liveCost)}
@@ -100,9 +102,9 @@ function SessionCardInner({
           onClick={() => onCheckOut(session.id)}
           loading={isCheckingOut}
           disabled={isCheckingOut}
-          aria-label={`Fazer check-out de ${session.child_name}`}
+          aria-label={t('sessionCard.checkOutAriaLabel', { name: session.child_name })}
         >
-          Check-Out
+          {t('sessionCard.checkOutButton')}
         </Button>
 
         <Button
@@ -111,9 +113,9 @@ function SessionCardInner({
           className="flex-1 min-h-[3rem]"
           onClick={() => onNotify(session.id)}
           disabled={isCheckingOut}
-          aria-label={`Notificar responsavel de ${session.child_name}`}
+          aria-label={t('sessionCard.notifyAriaLabel', { name: session.child_name })}
         >
-          Notificar
+          {t('sessionCard.notifyButton')}
         </Button>
       </footer>
     </article>

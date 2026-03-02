@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import type { Session } from '@shared/types/db'
 import { EmptyState } from '../../components/ui/EmptyState'
 import { Button } from '../../components/ui/Button'
@@ -19,6 +20,7 @@ const REFRESH_INTERVAL_MS = 30_000
 
 export function SessionsPage(): React.JSX.Element {
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const [sessions, setSessions] = useState<Session[]>([])
   const [loading, setLoading] = useState<boolean>(true)
@@ -31,10 +33,10 @@ export function SessionsPage(): React.JSX.Element {
     if (result.success) {
       setSessions(result.data)
     } else {
-      toast.error(`Erro ao carregar sessoes: ${result.error}`)
+      toast.error(t('sessions.errorLoad', { error: result.error }))
     }
     setLoading(false)
-  }, [])
+  }, [t])
 
   // Keep the ref current so the interval always calls the latest version.
   loadRef.current = load
@@ -58,8 +60,8 @@ export function SessionsPage(): React.JSX.Element {
 
   const handleNotify = useCallback((id: string): void => {
     // WhatsApp deep-link with session context — full implementation in TASK-011.
-    toast.info(`Notificacao para sessao ${id.slice(0, 8)}… (em breve)`)
-  }, [])
+    toast.info(t('sessions.notifyPending', { id: id.slice(0, 8) }))
+  }, [t])
 
   // ---------------------------------------------------------------------------
   // Render
@@ -69,14 +71,14 @@ export function SessionsPage(): React.JSX.Element {
     <div className="flex flex-col gap-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-surface-900">Sessoes Ativas</h1>
+        <h1 className="text-2xl font-bold text-surface-900">{t('sessions.title')}</h1>
 
         <Button
           size="md"
           onClick={() => void navigate({ to: '/check-in' })}
-          aria-label="Iniciar novo check-in"
+          aria-label={t('sessions.newCheckInAriaLabel')}
         >
-          Novo Check-in
+          {t('sessions.newCheckIn')}
         </Button>
       </div>
 
@@ -87,8 +89,8 @@ export function SessionsPage(): React.JSX.Element {
         </div>
       ) : sessions.length === 0 ? (
         <EmptyState
-          title="Nenhuma sessao ativa"
-          description="Faca um check-in para iniciar uma nova sessao."
+          title={t('sessions.emptyTitle')}
+          description={t('sessions.emptyDescription')}
           icon={
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -110,8 +112,8 @@ export function SessionsPage(): React.JSX.Element {
         <ul
           role="list"
           className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-          aria-label="Sessoes ativas"
-        >
+          aria-label={t('sessions.listAriaLabel')}>
+
           {sessions.map((session) => (
             <li key={session.id}>
               <SessionCard

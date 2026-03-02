@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from '@tanstack/react-router'
 import { toast } from 'sonner'
+import { useTranslation, Trans } from 'react-i18next'
 import type { PreviewCheckoutResult, Session } from '@shared/types/db'
 import { formatRs } from '@shared/utils/currency'
 import { Card, CardHeader, CardTitle } from '../../components/ui/Card'
@@ -50,6 +51,7 @@ function PreviewSection({
   confirming,
   canceling,
 }: PreviewSectionProps): React.JSX.Element {
+  const { t } = useTranslation()
   const busy = confirming || canceling
 
   return (
@@ -57,35 +59,35 @@ function PreviewSection({
       {/* Billing summary card */}
       <Card>
         <CardHeader>
-          <CardTitle>Resumo da Sessao</CardTitle>
+          <CardTitle>{t('checkOut.summaryTitle')}</CardTitle>
         </CardHeader>
 
         <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
-          <dt className="text-surface-500">Crianca</dt>
+          <dt className="text-surface-500">{t('checkOut.fieldChild')}</dt>
           <dd className="font-semibold text-surface-900">{preview.child_name}</dd>
 
           {preview.guardian_name && (
             <>
-              <dt className="text-surface-500">Responsavel</dt>
+              <dt className="text-surface-500">{t('checkOut.fieldGuardian')}</dt>
               <dd className="font-semibold text-surface-900">{preview.guardian_name}</dd>
             </>
           )}
 
-          <dt className="text-surface-500">Tarifa</dt>
+          <dt className="text-surface-500">{t('checkOut.fieldTariff')}</dt>
           <dd className="font-semibold text-surface-900">{preview.tariff_name}</dd>
 
-          <dt className="text-surface-500">Entrada</dt>
+          <dt className="text-surface-500">{t('checkOut.fieldEntry')}</dt>
           <dd className="font-semibold text-surface-900">
             {formatLocalTime(preview.checked_in_at)}
           </dd>
 
-          <dt className="text-surface-500">Duracao</dt>
+          <dt className="text-surface-500">{t('checkOut.fieldDuration')}</dt>
           <dd className="font-semibold text-surface-900">{formatElapsed(preview.elapsed_minutes)}</dd>
         </dl>
 
         {/* Total prominence */}
         <div className="mt-5 flex items-center justify-between rounded-xl bg-brand-50 px-4 py-3">
-          <span className="text-sm font-medium text-surface-700">Total a cobrar</span>
+          <span className="text-sm font-medium text-surface-700">{t('checkOut.totalLabel')}</span>
           <span className="text-2xl font-extrabold text-brand-700">
             {formatRs(preview.preview_total)}
           </span>
@@ -101,9 +103,9 @@ function PreviewSection({
           onClick={onConfirm}
           loading={confirming}
           disabled={busy}
-          aria-label="Confirmar check-out e fechar sessao"
+          aria-label={t('checkOut.confirmAriaLabel')}
         >
-          Confirmar Check-Out
+          {t('checkOut.confirmButton')}
         </Button>
 
         <Button
@@ -113,9 +115,9 @@ function PreviewSection({
           onClick={onCancel}
           loading={canceling}
           disabled={busy}
-          aria-label="Cancelar sessao sem cobrar"
+          aria-label={t('checkOut.cancelSessionAriaLabel')}
         >
-          Cancelar Sessao
+          {t('checkOut.cancelSessionButton')}
         </Button>
 
         <Button
@@ -124,9 +126,9 @@ function PreviewSection({
           className="w-full"
           onClick={onBack}
           disabled={busy}
-          aria-label="Voltar para a lista de sessoes"
+          aria-label={t('checkOut.backAriaLabel')}
         >
-          Voltar
+          {t('checkOut.backButton')}
         </Button>
       </div>
     </div>
@@ -150,26 +152,32 @@ function ReceiptSection({
   onSkip,
   printing,
 }: ReceiptSectionProps): React.JSX.Element {
+  const { t } = useTranslation()
+
   return (
     <div className="flex flex-col gap-6">
       <Card>
         <CardHeader>
-          <CardTitle>Check-Out Realizado</CardTitle>
+          <CardTitle>{t('checkOut.receiptTitle')}</CardTitle>
         </CardHeader>
 
         <p className="text-sm text-surface-600">
-          Sessao de <strong>{session.child_name}</strong> encerrada com sucesso.
+          <Trans
+            i18nKey="checkOut.receiptMessage"
+            values={{ name: session.child_name }}
+            components={{ bold: <strong /> }}
+          />
         </p>
 
         <div className="mt-4 flex items-center justify-between rounded-xl bg-success-50 px-4 py-3">
-          <span className="text-sm font-medium text-surface-700">Total cobrado</span>
+          <span className="text-sm font-medium text-surface-700">{t('checkOut.receiptTotalLabel')}</span>
           <span className="text-2xl font-extrabold text-success-700">
             {formatRs(session.total_cents ?? 0)}
           </span>
         </div>
       </Card>
 
-      <p className="text-center text-sm text-surface-500">Deseja imprimir o recibo?</p>
+      <p className="text-center text-sm text-surface-500">{t('checkOut.printQuestion')}</p>
 
       <div className="flex flex-col gap-3">
         <Button
@@ -179,9 +187,9 @@ function ReceiptSection({
           onClick={onPrint}
           loading={printing}
           disabled={printing}
-          aria-label="Imprimir recibo"
+          aria-label={t('checkOut.printAriaLabel')}
         >
-          Imprimir Recibo
+          {t('checkOut.printButton')}
         </Button>
 
         <Button
@@ -190,9 +198,9 @@ function ReceiptSection({
           className="w-full"
           onClick={onSkip}
           disabled={printing}
-          aria-label="Continuar sem imprimir"
+          aria-label={t('checkOut.skipPrintAriaLabel')}
         >
-          Continuar sem imprimir
+          {t('checkOut.skipPrintButton')}
         </Button>
       </div>
     </div>
@@ -206,6 +214,7 @@ function ReceiptSection({
 export function CheckOutPage(): React.JSX.Element {
   const navigate = useNavigate()
   const { id } = useParams({ from: '/sessions/$id/checkout' })
+  const { t } = useTranslation()
 
   const [step, setStep] = useState<PageStep>('preview')
   const [loading, setLoading] = useState<boolean>(true)
@@ -258,20 +267,20 @@ export function CheckOutPage(): React.JSX.Element {
     try {
       const result = await window.api.db.cancelSession({
         id,
-        notes: 'Cancelado pelo operador',
+        notes: t('checkOut.cancelOperatorNotes'),
       })
       if (result.success) {
-        toast.success('Sessao cancelada.')
+        toast.success(t('checkOut.successCancel'))
         void navigate({ to: '/sessions' })
       } else {
-        toast.error(`Erro ao cancelar: ${result.error}`)
+        toast.error(t('checkOut.errorCancel', { error: result.error }))
       }
     } catch (err) {
-      toast.error(`Erro inesperado: ${String(err)}`)
+      toast.error(t('checkOut.errorUnexpected', { error: String(err) }))
     } finally {
       setCanceling(false)
     }
-  }, [id, navigate])
+  }, [id, navigate, t])
 
   const handleBack = useCallback((): void => {
     void navigate({ to: '/sessions' })
@@ -281,14 +290,14 @@ export function CheckOutPage(): React.JSX.Element {
     setPrinting(true)
     try {
       await window.api.hw.printReceipt()
-      toast.success('Recibo enviado para impressao.')
+      toast.success(t('checkOut.successPrint'))
     } catch {
-      toast.error('Erro ao imprimir recibo.')
+      toast.error(t('checkOut.errorPrint'))
     } finally {
       setPrinting(false)
       void navigate({ to: '/sessions' })
     }
-  }, [navigate])
+  }, [navigate, t])
 
   const handleSkipPrint = useCallback((): void => {
     void navigate({ to: '/sessions' })
@@ -301,7 +310,7 @@ export function CheckOutPage(): React.JSX.Element {
   return (
     <div className="mx-auto flex max-w-lg flex-col gap-6 p-6">
       <header>
-        <h1 className="text-2xl font-bold text-surface-900">Check-Out</h1>
+        <h1 className="text-2xl font-bold text-surface-900">{t('checkOut.title')}</h1>
       </header>
 
       {loading ? (
@@ -312,7 +321,7 @@ export function CheckOutPage(): React.JSX.Element {
         <Card>
           <p className="text-sm text-danger-600">{previewError}</p>
           <Button variant="ghost" size="md" className="mt-4 w-full" onClick={handleBack}>
-            Voltar
+            {t('checkOut.backButton')}
           </Button>
         </Card>
       ) : step === 'preview' && preview ? (

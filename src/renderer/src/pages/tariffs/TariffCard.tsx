@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Tariff } from '@shared/types/db'
 import { formatRs } from '@shared/utils/currency'
 import { Card } from '../../components/ui/Card'
@@ -18,6 +19,7 @@ export function TariffCard({
   onDeactivate,
   deactivating = false,
 }: TariffCardProps): React.JSX.Element {
+  const { t } = useTranslation()
   const isActive = tariff.is_active === 1
 
   return (
@@ -30,7 +32,7 @@ export function TariffCard({
         </div>
         <div className="flex shrink-0 gap-2">
           <Button size="sm" variant="ghost" onClick={() => onEdit(tariff)}>
-            Editar
+            {t('tariffs.editButton')}
           </Button>
           {isActive && (
             <Button
@@ -39,7 +41,7 @@ export function TariffCard({
               loading={deactivating}
               onClick={() => onDeactivate(tariff.id)}
             >
-              Desativar
+              {t('tariffs.deactivateButton')}
             </Button>
           )}
         </div>
@@ -48,16 +50,18 @@ export function TariffCard({
       {/* Pricing details */}
       <dl className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm sm:grid-cols-3">
         <TariffDetail
-          label="Preco base"
+          label={t('tariffs.detailLabelBasePrice')}
           value={`${formatRs(tariff.base_price)} / ${tariff.base_minutes} min`}
         />
         <TariffDetail
-          label="Fracao adicional"
+          label={t('tariffs.detailLabelFraction')}
           value={`${formatRs(tariff.additional_fraction_price)} / ${tariff.additional_fraction_minutes} min`}
         />
         <TariffDetail
-          label="Tolerancia"
-          value={tariff.tolerance_minutes > 0 ? `${tariff.tolerance_minutes} min` : 'Sem tolerancia'}
+          label={t('tariffs.detailLabelTolerance')}
+          value={tariff.tolerance_minutes > 0
+            ? t('tariffs.detailToleranceMinutes', { minutes: tariff.tolerance_minutes })
+            : t('tariffs.detailToleranceNone')}
         />
       </dl>
     </Card>

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import type { Tariff } from '@shared/types/db'
 import { EmptyState } from '../../components/ui/EmptyState'
 import { Button } from '../../components/ui/Button'
@@ -10,6 +11,7 @@ import { TariffForm } from './TariffForm'
 type FormMode = 'create' | { edit: Tariff } | null
 
 export function TariffsPage(): React.JSX.Element {
+  const { t } = useTranslation()
   const [tariffs, setTariffs] = useState<Tariff[]>([])
   const [loading, setLoading] = useState(true)
   const [formMode, setFormMode] = useState<FormMode>(null)
@@ -21,12 +23,12 @@ export function TariffsPage(): React.JSX.Element {
       if (result.success) {
         setTariffs(result.data)
       } else {
-        toast.error(`Erro ao carregar tarifas: ${result.error}`)
+        toast.error(t('tariffs.errorLoad', { error: result.error }))
       }
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     void loadTariffs()
@@ -48,7 +50,7 @@ export function TariffsPage(): React.JSX.Element {
       setTariffs((prev) =>
         prev.map((t) => (t.id === id ? { ...t, is_active: 0 as const } : t)),
       )
-      toast.success('Tarifa desativada.')
+      toast.success(t('tariffs.successDeactivate'))
     } else {
       toast.error(result.error)
     }
@@ -66,9 +68,9 @@ export function TariffsPage(): React.JSX.Element {
     <div className="flex flex-col gap-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-surface-900">Tarifas</h1>
+        <h1 className="text-2xl font-bold text-surface-900">{t('tariffs.title')}</h1>
         {formMode === null && (
-          <Button onClick={() => setFormMode('create')}>Nova Tarifa</Button>
+          <Button onClick={() => setFormMode('create')}>{t('tariffs.newTariffButton')}</Button>
         )}
       </div>
 
@@ -84,12 +86,12 @@ export function TariffsPage(): React.JSX.Element {
       {/* List */}
       {tariffs.length === 0 ? (
         <EmptyState
-          title="Nenhuma tarifa configurada"
-          description="Adicione uma tarifa para poder registrar sessoes."
+          title={t('tariffs.emptyTitle')}
+          description={t('tariffs.emptyDescription')}
           action={
             formMode === null ? (
               <Button size="lg" onClick={() => setFormMode('create')}>
-                Configurar Tarifa
+                {t('tariffs.emptyAction')}
               </Button>
             ) : undefined
           }

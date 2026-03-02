@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { SaveTariffSchema } from '@shared/utils/tariff-schema'
 import { rsToCents, centsToRs } from '@shared/utils/currency'
 import type { Tariff, SaveTariffDto } from '@shared/types/db'
@@ -168,6 +169,7 @@ export interface TariffFormProps {
 }
 
 export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): React.JSX.Element {
+  const { t } = useTranslation()
   const [values, setValues] = useState<FormValues>(tariff ? fromTariff(tariff) : INITIAL_VALUES)
   const [errors, setErrors] = useState<FormErrors>({})
   const [submitting, setSubmitting] = useState(false)
@@ -211,7 +213,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
     try {
       const result = await window.api.db.saveTariff(parsed.data)
       if (result.success) {
-        toast.success(tariff ? 'Tarifa atualizada.' : 'Tarifa criada.')
+        toast.success(tariff ? t('tariffs.successUpdate') : t('tariffs.successCreate'))
         onSuccess(result.data)
       } else {
         toast.error(result.error)
@@ -224,11 +226,11 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
   return (
     <Card className="max-w-2xl">
       <CardHeader>
-        <CardTitle>{tariff ? 'Editar Tarifa' : 'Nova Tarifa'}</CardTitle>
+        <CardTitle>{tariff ? t('tariffs.formTitleEdit') : t('tariffs.formTitleCreate')}</CardTitle>
       </CardHeader>
 
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 pt-2">
-        <Field label="Nome" id="tf-name" error={errors.name}>
+        <Field label={t('tariffs.fieldName')} id="tf-name" error={errors.name}>
           <TextInput
             id="tf-name"
             value={values.name}
@@ -239,7 +241,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
         </Field>
 
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Preco base" id="tf-base-price" error={errors.base_price}>
+          <Field label={t('tariffs.fieldBasePrice')} id="tf-base-price" error={errors.base_price}>
             <CurrencyInput
               id="tf-base-price"
               value={values.base_price}
@@ -250,7 +252,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
           </Field>
 
           <Field
-            label="Minutos inclusos"
+            label={t('tariffs.fieldBaseMinutes')}
             id="tf-base-minutes"
             error={errors.base_minutes}
           >
@@ -265,7 +267,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
           </Field>
 
           <Field
-            label="Preco por fracao adicional"
+            label={t('tariffs.fieldFractionPrice')}
             id="tf-frac-price"
             error={errors.additional_fraction_price}
           >
@@ -279,7 +281,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
           </Field>
 
           <Field
-            label="Minutos por fracao"
+            label={t('tariffs.fieldFractionMinutes')}
             id="tf-frac-minutes"
             error={errors.additional_fraction_minutes}
           >
@@ -294,7 +296,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
           </Field>
 
           <Field
-            label="Tolerancia (minutos)"
+            label={t('tariffs.fieldTolerance')}
             id="tf-tolerance"
             error={errors.tolerance_minutes}
           >
@@ -316,15 +318,15 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
             onChange={(e) => setBool('is_active')(e.target.checked)}
             className="h-5 w-5 accent-brand-500"
           />
-          <span className="text-sm font-medium text-surface-800">Tarifa ativa</span>
+          <span className="text-sm font-medium text-surface-800">{t('tariffs.fieldActive')}</span>
         </label>
 
         <div className="flex justify-end gap-3 pt-2">
           <Button type="button" variant="ghost" onClick={onCancel} disabled={submitting}>
-            Cancelar
+            {t('tariffs.cancelButton')}
           </Button>
           <Button type="submit" loading={submitting}>
-            Salvar
+            {t('tariffs.saveButton')}
           </Button>
         </div>
       </form>

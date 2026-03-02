@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
+import { useTranslation, Trans } from 'react-i18next'
 import { CheckInRequestSchema } from '@shared/utils/check-in-schema'
 import type { Tariff } from '@shared/types/db'
 import { Button } from '../../components/ui/Button'
@@ -77,6 +78,8 @@ function TariffSelect({
   tariffs,
   error,
 }: TariffSelectProps): React.JSX.Element {
+  const { t } = useTranslation()
+
   return (
     <select
       id={id}
@@ -89,7 +92,7 @@ function TariffSelect({
         error ? 'border-danger-500' : 'border-surface-300',
       )}
     >
-      <option value="">Selecione uma tarifa...</option>
+      <option value="">{t('checkIn.fieldTariffPlaceholder')}</option>
       {tariffs.map((t) => (
         <option key={t.id} value={String(t.id)}>
           {t.name}
@@ -105,6 +108,7 @@ function TariffSelect({
 
 export function CheckInPage(): React.JSX.Element {
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const [values, setValues] = useState<FormValues>(INITIAL_VALUES)
   const [errors, setErrors] = useState<FormErrors>({})
@@ -180,17 +184,17 @@ export function CheckInPage(): React.JSX.Element {
     try {
       const res = await window.api.db.checkIn(parsed.data)
       if (res.success) {
-        toast.success('Check-in realizado com sucesso!')
+        toast.success(t('checkIn.successCheckIn'))
         setValues(INITIAL_VALUES)
         setErrors({})
         navigate({ to: '/sessions' })
       } else if (res.code === 'TARIFF_INACTIVE') {
-        setErrors({ tariff_id: 'A tarifa selecionada nao esta mais ativa.' })
+        setErrors({ tariff_id: t('checkIn.errorTariffInactive') })
       } else {
-        toast.error(res.error ?? 'Erro ao realizar check-in.')
+        toast.error(res.error ?? t('checkIn.errorCheckIn'))
       }
     } catch {
-      toast.error('Erro inesperado ao realizar check-in.')
+      toast.error(t('checkIn.errorUnexpected'))
     } finally {
       setSubmitting(false)
     }
@@ -202,11 +206,11 @@ export function CheckInPage(): React.JSX.Element {
 
   return (
     <div className="flex flex-col gap-6 p-6">
-      <h1 className="text-2xl font-bold text-surface-900">Check-in</h1>
+      <h1 className="text-2xl font-bold text-surface-900">{t('checkIn.title')}</h1>
 
       <Card className="max-w-lg">
         <CardHeader>
-          <CardTitle>Nova Sessao</CardTitle>
+          <CardTitle>{t('checkIn.cardTitle')}</CardTitle>
         </CardHeader>
 
         {loadingTariffs ? (
@@ -215,13 +219,13 @@ export function CheckInPage(): React.JSX.Element {
           </div>
         ) : (
           <form onSubmit={handleSubmit} noValidate className="mt-4 flex flex-col gap-4">
-            <Field id="child_name" label="Nome da crianca" required error={errors.child_name}>
+            <Field id="child_name" label={t('checkIn.fieldChildName')} required error={errors.child_name}>
               <TextInput
                 id="child_name"
                 value={values.child_name}
                 onChange={(v) => handleChange('child_name', v)}
                 onBlur={() => handleBlur('child_name')}
-                placeholder="Ex.: Maria"
+                placeholder={t('checkIn.fieldChildNamePlaceholder')}
                 error={errors.child_name}
                 autoFocus
               />
@@ -229,7 +233,7 @@ export function CheckInPage(): React.JSX.Element {
 
             <Field
               id="guardian_name"
-              label="Nome do responsavel"
+              label={t('checkIn.fieldGuardianName')}
               required
               error={errors.guardian_name}
             >
@@ -238,37 +242,40 @@ export function CheckInPage(): React.JSX.Element {
                 value={values.guardian_name}
                 onChange={(v) => handleChange('guardian_name', v)}
                 onBlur={() => handleBlur('guardian_name')}
-                placeholder="Ex.: Joao Silva"
+                placeholder={t('checkIn.fieldGuardianNamePlaceholder')}
                 error={errors.guardian_name}
               />
             </Field>
 
             <Field
               id="guardian_contact"
-              label="Contato (WhatsApp / telefone)"
+              label={t('checkIn.fieldGuardianContact')}
               error={errors.guardian_contact}
             >
               <TextInput
                 id="guardian_contact"
                 value={values.guardian_contact}
                 onChange={(v) => handleChange('guardian_contact', v)}
-                placeholder="Ex.: (11) 9 1234-5678"
+                placeholder={t('checkIn.fieldGuardianContactPlaceholder')}
                 error={errors.guardian_contact}
               />
             </Field>
 
-            <Field id="tariff_id" label="Tarifa" required error={errors.tariff_id}>
+            <Field id="tariff_id" label={t('checkIn.fieldTariff')} required error={errors.tariff_id}>
               {tariffs.length === 0 ? (
                 <p className="text-sm text-warning-600">
-                  Nenhuma tarifa ativa. Cadastre uma em{' '}
-                  <button
-                    type="button"
-                    className="underline"
-                    onClick={() => navigate({ to: '/tariffs' })}
-                  >
-                    Tarifas
-                  </button>
-                  .
+                  <Trans
+                    i18nKey="checkIn.noActiveTariffMessage"
+                    components={{
+                      link: (
+                        <button
+                          type="button"
+                          className="underline"
+                          onClick={() => navigate({ to: '/tariffs' })}
+                        />
+                      ),
+                    }}
+                  />
                 </p>
               ) : (
                 <TariffSelect
@@ -289,14 +296,14 @@ export function CheckInPage(): React.JSX.Element {
                 disabled={submitting}
                 onClick={() => { setValues(INITIAL_VALUES); setErrors({}) }}
               >
-                Limpar
+                {t('common.clear')}
               </Button>
               <Button
                 type="submit"
                 disabled={submitting || tariffs.length === 0}
                 loading={submitting}
               >
-                Iniciar Sessao
+                {t('checkIn.submitButton')}
               </Button>
             </div>
           </form>
