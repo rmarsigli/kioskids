@@ -10,8 +10,7 @@ export const IPC = {
     SAVE_TARIFF: 'db:save-tariff',
     DEACTIVATE_TARIFF: 'db:deactivate-tariff',
     CHECK_IN: 'db:check-in',
-    CHECK_OUT: 'db:check-out',
-    CHECKOUT_SESSION: 'db:checkout-session',   // closes an open session from the dashboard
+    CHECK_OUT: 'db:check-out',            // closes an open session — Main sets timestamp
     GET_SESSIONS: 'db:get-sessions',
     GET_ACTIVE_SESSIONS: 'db:get-active-sessions', // returns only open sessions
     PREVIEW_CHECKOUT: 'db:preview-checkout',        // read-only cost preview, no DB write

@@ -14,11 +14,8 @@ import { TariffRepository, SessionRepository } from '../database'
 const tariffRepo = new TariffRepository()
 const sessionRepo = new SessionRepository()
 
-/** Zod schema for the checkout request coming from the Renderer. */
-const CheckoutRequestSchema = z.object({ id: z.string().uuid() })
-
-/** Zod schema for the preview-checkout request (read-only). */
-const PreviewCheckoutSchema = z.object({ id: z.string().uuid() })
+/** Single UUID schema reused by checkout, preview-checkout, and cancel-session handlers. */
+const SessionIdSchema = z.object({ id: z.string().uuid() })
 
 /** Zod schema for canceling a session with an optional human-readable reason. */
 const CancelSessionSchema = z.object({
@@ -87,9 +84,9 @@ export function registerDbHandlers(): void {
 
   // Closes a session: Main sets the timestamp, calculates totals from the stored snapshot.
   ipcMain.handle(
-    IPC.DB.CHECKOUT_SESSION,
+    IPC.DB.CHECK_OUT,
     (_, dto: unknown): IpcResult<Session> => {
-      const parsed = CheckoutRequestSchema.safeParse(dto)
+      const parsed = SessionIdSchema.safeParse(dto)
       if (!parsed.success) {
         return { success: false, error: 'ID de sessao invalido.', code: 'VALIDATION_ERROR' }
       }
@@ -136,7 +133,7 @@ export function registerDbHandlers(): void {
   ipcMain.handle(
     IPC.DB.PREVIEW_CHECKOUT,
     (_, dto: unknown): IpcResult<PreviewCheckoutResult> => {
-      const parsed = PreviewCheckoutSchema.safeParse(dto)
+      const parsed = SessionIdSchema.safeParse(dto)
       if (!parsed.success) {
         return { success: false, error: 'ID de sessao invalido.', code: 'VALIDATION_ERROR' }
       }

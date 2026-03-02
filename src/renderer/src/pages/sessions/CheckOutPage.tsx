@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useParams } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import type { PreviewCheckoutResult, Session } from '@shared/types/db'
 import { formatRs } from '@shared/utils/currency'
 import { Card, CardHeader, CardTitle } from '../../components/ui/Card'
 import { Button } from '../../components/ui/Button'
 import { Spinner } from '../../components/ui/Spinner'
-import { checkOutRoute } from '../../router'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -206,7 +205,7 @@ function ReceiptSection({
 
 export function CheckOutPage(): React.JSX.Element {
   const navigate = useNavigate()
-  const { id } = checkOutRoute.useParams()
+  const { id } = useParams({ from: '/sessions/$id/checkout' })
 
   const [step, setStep] = useState<PageStep>('preview')
   const [loading, setLoading] = useState<boolean>(true)

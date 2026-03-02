@@ -29,7 +29,7 @@ const dbApi = {
   getActiveSessions: (): Promise<IpcResult<Session[]>> =>
     ipcRenderer.invoke(IPC.DB.GET_ACTIVE_SESSIONS),
   checkOutSession: (dto: CheckOutRequestDto): Promise<IpcResult<Session>> =>
-    ipcRenderer.invoke(IPC.DB.CHECKOUT_SESSION, dto),
+    ipcRenderer.invoke(IPC.DB.CHECK_OUT, dto),
   previewCheckout: (id: string): Promise<IpcResult<PreviewCheckoutResult>> =>
     ipcRenderer.invoke(IPC.DB.PREVIEW_CHECKOUT, { id }),
   cancelSession: (dto: CancelSessionDto): Promise<IpcResult<Session>> =>

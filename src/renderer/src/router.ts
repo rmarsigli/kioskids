@@ -34,7 +34,7 @@ const sessionsRoute = createRoute({
   component: SessionsPage,
 })
 
-export const checkOutRoute = createRoute({
+const checkOutRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/sessions/$id/checkout',
   component: CheckOutPage,
