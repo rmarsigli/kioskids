@@ -13,7 +13,7 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "lint": "eslint src",
-    "postinstall": "electron-rebuild -f -w better-sqlite3"
+    "postinstall": "pnpm rebuild:electron"
   },
   "author": "Rafhael Marsigli",
   "license": "UNLICENSED",
