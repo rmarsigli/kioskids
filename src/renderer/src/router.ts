@@ -5,6 +5,7 @@ import { CheckInPage } from './pages/check-in/CheckInPage'
 import { HistoryPage } from './pages/history/HistoryPage'
 import { TariffsPage } from './pages/tariffs/TariffsPage'
 import { CheckOutPage } from './pages/sessions/CheckOutPage'
+import { CustomersPage } from './pages/customers/CustomersPage'
 
 // ---------------------------------------------------------------------------
 // Route definitions
@@ -52,6 +53,12 @@ const tariffsRoute = createRoute({
   component: TariffsPage,
 })
 
+const customersRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/customers',
+  component: CustomersPage,
+})
+
 // ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------
@@ -63,6 +70,7 @@ const routeTree = rootRoute.addChildren([
   checkOutRoute,
   historyRoute,
   tariffsRoute,
+  customersRoute,
 ])
 
 export const router = createRouter({ routeTree })

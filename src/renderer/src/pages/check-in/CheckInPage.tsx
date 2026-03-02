@@ -3,11 +3,12 @@ import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { useTranslation, Trans } from 'react-i18next'
 import { CheckInRequestSchema } from '@shared/utils/check-in-schema'
-import type { Tariff } from '@shared/types/db'
+import type { Customer, Tariff } from '@shared/types/db'
 import { Button } from '../../components/ui/Button'
 import { Card, CardHeader, CardTitle } from '../../components/ui/Card'
 import { Field, TextInput } from '../../components/ui/FormField'
 import { Spinner } from '../../components/ui/Spinner'
+import { CustomerAutocomplete } from '../../components/CustomerAutocomplete'
 import { cn } from '../../lib/cn'
 
 // ---------------------------------------------------------------------------
@@ -19,6 +20,7 @@ interface FormValues {
   guardian_name: string
   guardian_contact: string
   tariff_id: string   // numeric id stored as string for the <select>
+  customer_id: string // UUID of linked customer, or empty string
 }
 
 type FormErrors = Partial<Record<keyof FormValues, string>>
@@ -28,6 +30,7 @@ const INITIAL_VALUES: FormValues = {
   guardian_name: '',
   guardian_contact: '',
   tariff_id: '',
+  customer_id: '',
 }
 
 // 2-second debounce window to prevent accidental double-submit.
@@ -135,6 +138,29 @@ export function CheckInPage(): React.JSX.Element {
   }, [])
 
   // ---------------------------------------------------------------------------
+  // Customer autocomplete — pre-fill fields when a known customer is selected
+  // ---------------------------------------------------------------------------
+
+  const handleCustomerSelect = async (customer: Customer): Promise<void> => {
+    // Fetch full record to get guardians for pre-fill.
+    const res = await window.api.db.getCustomer(customer.id)
+    const guardian = res.success ? res.data.guardians[0] : undefined
+    const phone = guardian?.phones[0]?.phone ?? ''
+    setValues((prev) => ({
+      ...prev,
+      child_name: customer.name,
+      guardian_name: guardian?.name ?? prev.guardian_name,
+      guardian_contact: phone || prev.guardian_contact,
+      customer_id: customer.id,
+    }))
+    setErrors({})
+  }
+
+  const handleCustomerClear = (): void => {
+    setValues((prev) => ({ ...prev, customer_id: '' }))
+  }
+
+  // ---------------------------------------------------------------------------
   // Change / blur handlers
   // ---------------------------------------------------------------------------
 
@@ -165,6 +191,7 @@ export function CheckInPage(): React.JSX.Element {
       guardian_name: values.guardian_name,
       guardian_contact: values.guardian_contact || undefined,
       tariff_id: Number(values.tariff_id),
+      customer_id: values.customer_id || undefined,
     }
 
     // Full pre-submit Zod validation.
@@ -219,6 +246,14 @@ export function CheckInPage(): React.JSX.Element {
           </div>
         ) : (
           <form onSubmit={handleSubmit} noValidate className="mt-4 flex flex-col gap-4">
+            {/* Optional: search an existing client to pre-fill fields */}
+            <Field id="customer-search" label={t('checkInAutocomplete.searchLabel')}>
+              <CustomerAutocomplete
+                onSelect={(c) => void handleCustomerSelect(c)}
+                onClear={handleCustomerClear}
+              />
+            </Field>
+
             <Field id="child_name" label={t('checkIn.fieldChildName')} required error={errors.child_name}>
               <TextInput
                 id="child_name"

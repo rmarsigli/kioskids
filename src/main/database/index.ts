@@ -12,6 +12,9 @@ export { TariffRepository } from './repositories/tariff.repository'
 export { SessionRepository } from './repositories/session.repository'
 export { SyncQueueRepository } from './repositories/syncQueue.repository'
 export { AppConfigRepository } from './repositories/appConfig.repository'
+export { CustomerRepository } from './repositories/customer.repository'
+export { GuardianRepository } from './repositories/guardian.repository'
+export { GuardianPhoneRepository } from './repositories/guardianPhone.repository'
 
 /**
  * Initialises the database: opens the file, runs pending migrations, seeds

@@ -1,6 +1,7 @@
 import { registerDbHandlers } from './db.handler'
 import { registerHwHandlers } from './hw.handler'
 import { registerAppHandlers } from './app.handler'
+import { registerCustomerHandlers } from './customer.handler'
 
 /**
  * Registers all ipcMain.handle listeners for each domain.
@@ -11,4 +12,5 @@ export function registerIpcHandlers(): void {
   registerDbHandlers()
   registerHwHandlers()
   registerAppHandlers()
+  registerCustomerHandlers()
 }

@@ -11,6 +11,14 @@ import type {
   CheckInRequestDto,
   PreviewCheckoutResult,
   CancelSessionDto,
+  Customer,
+  CustomerWithGuardians,
+  Guardian,
+  GuardianPhone,
+  SaveCustomerDto,
+  SaveGuardianDto,
+  SaveGuardianPhoneDto,
+  SearchCustomersDto,
 } from '@shared/types/db'
 
 // Domain-scoped API wrappers. Each method is a thin invoke() call — no logic
@@ -34,6 +42,21 @@ const dbApi = {
     ipcRenderer.invoke(IPC.DB.PREVIEW_CHECKOUT, { id }),
   cancelSession: (dto: CancelSessionDto): Promise<IpcResult<Session>> =>
     ipcRenderer.invoke(IPC.DB.CANCEL_SESSION, dto),
+  // Customer domain
+  searchCustomers: (dto: SearchCustomersDto): Promise<IpcResult<Customer[]>> =>
+    ipcRenderer.invoke(IPC.DB.SEARCH_CUSTOMERS, dto),
+  getCustomer: (id: string): Promise<IpcResult<CustomerWithGuardians>> =>
+    ipcRenderer.invoke(IPC.DB.GET_CUSTOMER, { id }),
+  saveCustomer: (dto: SaveCustomerDto): Promise<IpcResult<Customer>> =>
+    ipcRenderer.invoke(IPC.DB.SAVE_CUSTOMER, dto),
+  saveGuardian: (dto: SaveGuardianDto): Promise<IpcResult<Guardian>> =>
+    ipcRenderer.invoke(IPC.DB.SAVE_GUARDIAN, dto),
+  deleteGuardian: (id: string): Promise<IpcResult<void>> =>
+    ipcRenderer.invoke(IPC.DB.DELETE_GUARDIAN, { id }),
+  saveGuardianPhone: (dto: SaveGuardianPhoneDto): Promise<IpcResult<GuardianPhone>> =>
+    ipcRenderer.invoke(IPC.DB.SAVE_GUARDIAN_PHONE, dto),
+  deleteGuardianPhone: (id: string): Promise<IpcResult<void>> =>
+    ipcRenderer.invoke(IPC.DB.DELETE_GUARDIAN_PHONE, { id }),
 }
 
 const hwApi = {

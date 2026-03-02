@@ -60,15 +60,16 @@ export class SessionRepository extends BaseRepository {
         .prepare(`
           INSERT INTO sessions
             (id, child_name, guardian_name, guardian_contact,
-             tariff_id, tariff_snapshot, checked_in_at,
+             customer_id, tariff_id, tariff_snapshot, checked_in_at,
              status, sync_status, created_at, updated_at)
-          VALUES (?, ?, ?, ?, ?, ?, ?, 'open', 'pending', ?, ?)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'open', 'pending', ?, ?)
         `)
         .run(
           dto.id,
           dto.child_name,
           dto.guardian_name ?? null,
           dto.guardian_contact ?? null,
+          dto.customer_id ?? null,
           dto.tariff_id,
           snapshotJson,
           now,

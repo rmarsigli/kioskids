@@ -4,6 +4,7 @@
     "sessions": "Sessões",
     "history": "Histórico",
     "tariffs": "Tarifas",
+    "customers": "Clientes",
     "mainLabel": "Navegação principal"
   },
   "common": {
@@ -122,5 +123,47 @@
     "title": "Histórico",
     "emptyTitle": "Nenhuma sessão registrada",
     "emptyDescription": "O histórico de sessões encerradas aparecerá aqui."
+  },
+  "customers": {
+    "title": "Clientes",
+    "newButton": "Novo Cliente",
+    "searchPlaceholder": "Buscar por nome...",
+    "emptyTitle": "Nenhum cliente cadastrado",
+    "emptyDescription": "Adicione clientes para agilizar o check-in.",
+    "modalTitleCreate": "Novo Cliente",
+    "modalTitleEdit": "Editar Cliente",
+    "fieldName": "Nome",
+    "fieldNamePlaceholder": "Ex.: Ana Silva",
+    "fieldDateOfBirth": "Data de nascimento",
+    "fieldDateOfBirthPlaceholder": "AAAA-MM-DD",
+    "fieldNotes": "Observações",
+    "fieldNotesPlaceholder": "Alergias, preferências...",
+    "guardiansSectionTitle": "Responsáveis",
+    "addGuardianButton": "Adicionar Responsável",
+    "guardianNameLabel": "Nome do responsável",
+    "guardianNamePlaceholder": "Ex.: João Silva",
+    "phonesSectionTitle": "Telefones",
+    "addPhoneButton": "Adicionar Telefone",
+    "phoneLabel": "Número",
+    "phonePlaceholder": "Ex.: (11) 9 1234-5678",
+    "phoneLabelField": "Tipo (opcional)",
+    "phoneLabelPlaceholder": "celular, trabalho...",
+    "removeGuardian": "Remover responsável",
+    "removePhone": "Remover telefone",
+    "saveButton": "Salvar",
+    "cancelButton": "Cancelar",
+    "successCreate": "Cliente cadastrado.",
+    "successUpdate": "Cliente atualizado.",
+    "errorLoad": "Erro ao carregar clientes: {{error}}",
+    "errorSave": "Erro ao salvar: {{error}}",
+    "errorSaveGuardian": "Erro ao salvar responsável: {{error}}",
+    "errorDeleteGuardian": "Erro ao remover responsável: {{error}}",
+    "errorSavePhone": "Erro ao salvar telefone: {{error}}",
+    "errorDeletePhone": "Erro ao remover telefone: {{error}}"
+  },
+  "checkInAutocomplete": {
+    "searchLabel": "Buscar cliente cadastrado (opcional)",
+    "searchPlaceholder": "Digite o nome para buscar...",
+    "noResults": "Nenhum cliente encontrado."
   }
 }

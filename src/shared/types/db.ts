@@ -11,6 +11,12 @@ export type SyncStatus = 'pending' | 'synced' | 'error'
 export type { TariffSnapshot } from '@shared/utils/tariff-engine'
 export type { SaveTariffDto } from '@shared/utils/tariff-schema'
 export type { CheckInRequestDto } from '@shared/utils/check-in-schema'
+export type {
+  SaveCustomerDto,
+  SaveGuardianDto,
+  SaveGuardianPhoneDto,
+  SearchCustomersDto,
+} from '@shared/utils/customer-schema'
 
 // ---------------------------------------------------------------------------
 // Tariff
@@ -50,6 +56,7 @@ export interface Session {
   child_name: string
   guardian_name: string | null   // added in migration 002 — required from TASK-008 onwards
   guardian_contact: string | null // phone/WhatsApp, added in migration 002
+  customer_id: string | null     // optional link to customers table (migration 005)
   tariff_id: number
   tariff_snapshot: string        // JSON.stringify(TariffSnapshot)
   checked_in_at: string          // UTC ISO-8601
@@ -93,6 +100,7 @@ export interface CheckInDto {
   guardian_name?: string  // required from TASK-008; nullable here for backwards compat
   guardian_contact?: string
   tariff_id: number
+  customer_id?: string    // optional link to customers table (migration 005)
 }
 
 /** Payload the Renderer sends to close a session. Main sets the timestamp. */
@@ -129,4 +137,38 @@ export interface AppConfig {
   key: string
   value: string
   updated_at: string
+}
+
+// ---------------------------------------------------------------------------
+// Customer, Guardian, GuardianPhone
+// ---------------------------------------------------------------------------
+
+export interface Customer {
+  id: string         // UUID v4
+  name: string
+  date_of_birth: string | null  // YYYY-MM-DD or null
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface Guardian {
+  id: string
+  customer_id: string
+  name: string
+  created_at: string
+  updated_at: string
+}
+
+export interface GuardianPhone {
+  id: string
+  guardian_id: string
+  phone: string
+  label: string | null
+  created_at: string
+}
+
+/** Full customer record with nested guardians and their phone numbers. */
+export interface CustomerWithGuardians extends Customer {
+  guardians: Array<Guardian & { phones: GuardianPhone[] }>
 }

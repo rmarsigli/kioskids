@@ -9,6 +9,14 @@ import type {
   CheckInRequestDto,
   PreviewCheckoutResult,
   CancelSessionDto,
+  Customer,
+  CustomerWithGuardians,
+  Guardian,
+  GuardianPhone,
+  SaveCustomerDto,
+  SaveGuardianDto,
+  SaveGuardianPhoneDto,
+  SearchCustomersDto,
 } from './db'
 
 // Augments the global Window interface with the contextBridge API surface.
@@ -28,6 +36,14 @@ declare global {
         checkOutSession: (dto: CheckOutRequestDto) => Promise<IpcResult<Session>>
         previewCheckout: (id: string) => Promise<IpcResult<PreviewCheckoutResult>>
         cancelSession: (dto: CancelSessionDto) => Promise<IpcResult<Session>>
+        // Customer domain
+        searchCustomers: (dto: SearchCustomersDto) => Promise<IpcResult<Customer[]>>
+        getCustomer: (id: string) => Promise<IpcResult<CustomerWithGuardians>>
+        saveCustomer: (dto: SaveCustomerDto) => Promise<IpcResult<Customer>>
+        saveGuardian: (dto: SaveGuardianDto) => Promise<IpcResult<Guardian>>
+        deleteGuardian: (id: string) => Promise<IpcResult<void>>
+        saveGuardianPhone: (dto: SaveGuardianPhoneDto) => Promise<IpcResult<GuardianPhone>>
+        deleteGuardianPhone: (id: string) => Promise<IpcResult<void>>
       }
       hw: {
         printReceipt: () => Promise<IpcResult<void>>

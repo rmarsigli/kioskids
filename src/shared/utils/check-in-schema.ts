@@ -15,6 +15,8 @@ export const CheckInRequestSchema = z.object({
   /** Optional — phone / WhatsApp. */
   guardian_contact: z.string().optional(),
   tariff_id: z.number().int().positive('Selecione uma tarifa valida'),
+  /** Optional — UUID of an existing customer record. */
+  customer_id: z.string().uuid().optional(),
 })
 
 export type CheckInRequestDto = z.infer<typeof CheckInRequestSchema>

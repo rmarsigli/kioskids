@@ -15,6 +15,14 @@ export const IPC = {
     GET_ACTIVE_SESSIONS: 'db:get-active-sessions', // returns only open sessions
     PREVIEW_CHECKOUT: 'db:preview-checkout',        // read-only cost preview, no DB write
     CANCEL_SESSION: 'db:cancel-session',            // marks session as canceled
+    // Customers
+    SEARCH_CUSTOMERS: 'db:search-customers',
+    GET_CUSTOMER: 'db:get-customer',
+    SAVE_CUSTOMER: 'db:save-customer',
+    SAVE_GUARDIAN: 'db:save-guardian',
+    DELETE_GUARDIAN: 'db:delete-guardian',
+    SAVE_GUARDIAN_PHONE: 'db:save-guardian-phone',
+    DELETE_GUARDIAN_PHONE: 'db:delete-guardian-phone',
   },
   HW: {
     PRINT_RECEIPT: 'hw:print-receipt',

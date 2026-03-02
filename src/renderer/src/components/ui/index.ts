@@ -12,3 +12,6 @@ export { EmptyState } from './EmptyState'
 
 export { Field, TextInput } from './FormField'
 export type { FieldProps, TextInputProps } from './FormField'
+
+export { Dialog, DialogHeader } from './Dialog'
+export type { DialogProps } from './Dialog'

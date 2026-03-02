@@ -52,10 +52,12 @@ describe('runMigrations', () => {
       .prepare('SELECT filename FROM _migrations ORDER BY id')
       .all() as Array<{ filename: string }>
 
-    expect(rows).toHaveLength(3)
+    expect(rows).toHaveLength(5)
     expect(rows[0].filename).toBe('001_initial_schema.sql')
     expect(rows[1].filename).toBe('002_sessions_guardian_fields.sql')
     expect(rows[2].filename).toBe('003_sessions_cancel_notes.sql')
+    expect(rows[3].filename).toBe('004_customers.sql')
+    expect(rows[4].filename).toBe('005_sessions_customer_id.sql')
   })
 
   it('should be idempotent — running twice does not throw or duplicate records', () => {
@@ -65,7 +67,7 @@ describe('runMigrations', () => {
       .prepare('SELECT filename FROM _migrations')
       .all() as Array<{ filename: string }>
 
-    expect(rows).toHaveLength(3)
+    expect(rows).toHaveLength(5)
   })
 })
 
