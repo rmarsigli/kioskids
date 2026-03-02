@@ -20,6 +20,7 @@ import { Spinner } from '../../components/ui/Spinner'
 import { useSessionTimer } from '../../hooks/useSessionTimer'
 import { playBeep } from '../../lib/beep'
 import { cn } from '../../lib/cn'
+import { RENDERER_EVENTS } from '../../lib/events'
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -150,8 +151,24 @@ interface TodayRowProps {
   session: Session
 }
 
+/**
+ * Static class map — hoisted to avoid re-allocation on every render.
+ * Keys must stay in sync with SessionStatus in @shared/types/db.
+ */
+const STATUS_CLASS: Record<Session['status'], string> = {
+  open: 'bg-brand-100 text-brand-700',
+  closed: 'bg-surface-200 text-surface-700',
+  canceled: 'bg-danger-100 text-danger-700',
+}
+
 function TodaySessionRow({ session }: TodayRowProps): React.JSX.Element {
   const { t } = useTranslation()
+
+  const statusLabel: Record<Session['status'], string> = {
+    open: t('dashboard.statusOpen'),
+    closed: t('dashboard.statusClosed'),
+    canceled: t('dashboard.statusCanceled'),
+  }
 
   const tariffName = useMemo(() => {
     try {
@@ -160,18 +177,6 @@ function TodaySessionRow({ session }: TodayRowProps): React.JSX.Element {
       return '—'
     }
   }, [session.tariff_snapshot])
-
-  const statusLabel: Record<Session['status'], string> = {
-    open: t('dashboard.statusOpen'),
-    closed: t('dashboard.statusClosed'),
-    canceled: t('dashboard.statusCanceled'),
-  }
-
-  const statusClass: Record<Session['status'], string> = {
-    open: 'bg-brand-100 text-brand-700',
-    closed: 'bg-surface-200 text-surface-700',
-    canceled: 'bg-danger-100 text-danger-700',
-  }
 
   return (
     <tr className="border-b border-surface-100 hover:bg-surface-50 transition-colors">
@@ -194,7 +199,7 @@ function TodaySessionRow({ session }: TodayRowProps): React.JSX.Element {
         {session.total_cents != null ? formatRs(session.total_cents) : '—'}
       </td>
       <td className="px-3 py-2">
-        <span className={cn('rounded-full px-2 py-0.5 text-xs font-semibold', statusClass[session.status])}>
+        <span className={cn('rounded-full px-2 py-0.5 text-xs font-semibold', STATUS_CLASS[session.status])}>
           {statusLabel[session.status]}
         </span>
       </td>
@@ -285,8 +290,8 @@ export function SessionsPage(): React.JSX.Element {
   // Immediate refresh requested by AppLayout after a successful check-in.
   useEffect((): (() => void) => {
     const handler = (): void => { void loadRef.current?.() }
-    window.addEventListener('sessions:refresh', handler)
-    return () => window.removeEventListener('sessions:refresh', handler)
+    window.addEventListener(RENDERER_EVENTS.SESSIONS_REFRESH, handler)
+    return () => window.removeEventListener(RENDERER_EVENTS.SESSIONS_REFRESH, handler)
   }, [])
 
   // ---------------------------------------------------------------------------

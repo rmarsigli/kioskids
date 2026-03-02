@@ -17,8 +17,8 @@ import { useTranslation } from 'react-i18next'
 import { SaveCustomerSchema } from '@shared/utils/customer-schema'
 import type { CustomerWithGuardians } from '@shared/types/db'
 import { Button } from '../../../components/ui/Button'
-import { Field, TextInput } from '../../../components/ui/FormField'
-import { Dialog, DialogHeader } from '../../../components/ui/Dialog'
+import { Field, TextInput } from '../../components/ui/FormField'
+import { Dialog, DialogHeader } from '../../components/ui/Dialog'
 
 // ---------------------------------------------------------------------------
 // Draft data model (renderer-only, not persisted until Save)
