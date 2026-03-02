@@ -1,5 +1,5 @@
 import { BaseRepository } from './base.repository'
-import type { Customer, CustomerWithGuardians, SaveCustomerDto } from '@shared/types/db'
+import type { Customer, CustomerWithGuardians, Guardian, GuardianPhone, SaveCustomerDto } from '@shared/types/db'
 import { nowIso } from '@shared/utils/time'
 
 export class CustomerRepository extends BaseRepository {
@@ -35,7 +35,7 @@ export class CustomerRepository extends BaseRepository {
 
     const guardians = this.db
       .prepare('SELECT * FROM guardians WHERE customer_id = ? ORDER BY created_at')
-      .all(id) as Array<{ id: string; customer_id: string; name: string; created_at: string; updated_at: string }>
+      .all(id) as Guardian[]
 
     const phones = this.db
       .prepare(
@@ -44,9 +44,9 @@ export class CustomerRepository extends BaseRepository {
          WHERE g.customer_id = ?
          ORDER BY gp.created_at`,
       )
-      .all(id) as Array<{ id: string; guardian_id: string; phone: string; label: string | null; created_at: string }>
+      .all(id) as GuardianPhone[]
 
-    const phonesByGuardian = phones.reduce<Record<string, typeof phones>>(
+    const phonesByGuardian = phones.reduce<Record<string, GuardianPhone[]>>(
       (acc, phone) => {
         if (!acc[phone.guardian_id]) acc[phone.guardian_id] = []
         acc[phone.guardian_id].push(phone)

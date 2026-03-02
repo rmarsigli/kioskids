@@ -19,7 +19,6 @@ import type { CustomerWithGuardians } from '@shared/types/db'
 import { Button } from '../../../components/ui/Button'
 import { Field, TextInput } from '../../../components/ui/FormField'
 import { Dialog, DialogHeader } from '../../../components/ui/Dialog'
-import { Spinner } from '../../../components/ui/Spinner'
 
 // ---------------------------------------------------------------------------
 // Draft data model (renderer-only, not persisted until Save)
@@ -115,6 +114,8 @@ export function CustomerModal({
   const [deletedGuardianIds, setDeletedGuardianIds] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
   const customerId = useRef<string>(randomUUID())
+  // Prevents double-submit on slow IPC (follows CheckInPage pattern).
+  const submitLock = useRef(false)
 
   // Re-initialise state when the dialog opens or the target customer changes.
   useEffect(() => {
@@ -240,6 +241,8 @@ export function CustomerModal({
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
+    if (submitLock.current || saving) return
+    submitLock.current = true
 
     const customerParsed = SaveCustomerSchema.safeParse({
       id: customerId.current,
@@ -260,7 +263,6 @@ export function CustomerModal({
 
     setSaving(true)
     try {
-      // 1 — Save customer
       const custResult = await window.api.db.saveCustomer(customerParsed.data)
       if (!custResult.success) {
         toast.error(t('customers.errorSave', { error: custResult.error }))
@@ -322,6 +324,7 @@ export function CustomerModal({
       }
     } finally {
       setSaving(false)
+      submitLock.current = false
     }
   }
 
@@ -478,8 +481,8 @@ export function CustomerModal({
           <Button type="button" variant="outline" onClick={onClose} disabled={saving}>
             {t('customers.cancelButton')}
           </Button>
-          <Button type="submit" disabled={saving}>
-            {saving ? <Spinner size="sm" /> : t('customers.saveButton')}
+          <Button type="submit" disabled={saving} loading={saving}>
+            {t('customers.saveButton')}
           </Button>
         </div>
       </form>
