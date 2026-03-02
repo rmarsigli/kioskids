@@ -1,7 +1,7 @@
 import React from 'react'
 import { RouterProvider } from '@tanstack/react-router'
 import { Toaster } from 'sonner'
-import { ErrorBoundary } from './components/ErrorBoundary'
+import { ErrorBoundary } from '@renderer/components/error-boundary'
 import { router } from './router'
 
 export default function App(): React.JSX.Element {

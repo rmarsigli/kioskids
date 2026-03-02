@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { EmptyState } from '../../components/ui/EmptyState'
+import { EmptyState } from '@renderer/components/ui/empty-state'
 
 export function HistoryPage(): React.JSX.Element {
   const { t } = useTranslation()

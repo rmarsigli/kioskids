@@ -2,9 +2,9 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Tariff } from '@shared/types/db'
 import { formatRs } from '@shared/utils/currency'
-import { Card } from '../../components/ui/Card'
-import { Badge } from '../../components/ui/Badge'
-import { Button } from '../../components/ui/Button'
+import { Card } from '@renderer/components/ui/card'
+import { Badge } from '@renderer/components/ui/badge'
+import { Button } from '@renderer/components/ui/button'
 
 export interface TariffCardProps {
   tariff: Tariff

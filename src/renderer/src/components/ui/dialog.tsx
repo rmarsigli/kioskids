@@ -4,7 +4,7 @@
  * Uses a ref callback to open/close imperatively so no external portals are needed.
  */
 import React, { useEffect, useRef } from 'react'
-import { cn } from '../../lib/cn'
+import { cn } from '@renderer/lib/cn'
 
 export interface DialogProps {
   open: boolean

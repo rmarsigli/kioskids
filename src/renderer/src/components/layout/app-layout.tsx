@@ -11,10 +11,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, Outlet } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
-import { Dialog, DialogHeader } from '../ui/Dialog'
-import { Button } from '../ui/Button'
-import { CheckInForm } from '../../pages/check-in/CheckInPage'
-import { RENDERER_EVENTS } from '../../lib/events'
+import { Dialog, DialogHeader } from '@renderer/components/ui/dialog'
+import { Button } from '@renderer/components/ui/button'
+import { CheckInForm } from '@renderer/pages/check-in/check-in-page'
+import { RENDERER_EVENTS } from '@renderer/lib/events'
 
 // ---------------------------------------------------------------------------
 // Hamburger dropdown navigation

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button } from './ui/Button'
+import { Button } from '@renderer/components/ui/button'
 
 interface Props {
   children: React.ReactNode

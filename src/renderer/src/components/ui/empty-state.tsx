@@ -1,5 +1,5 @@
 import React from 'react'
-import { cn } from '../../lib/cn'
+import { cn } from '@renderer/lib/cn'
 
 interface EmptyStateProps {
   icon?: React.ReactNode

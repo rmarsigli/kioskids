@@ -16,9 +16,9 @@ import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { SaveCustomerSchema } from '@shared/utils/customer-schema'
 import type { CustomerWithGuardians } from '@shared/types/db'
-import { Button } from '../../../components/ui/Button'
-import { Field, TextInput } from '../../components/ui/FormField'
-import { Dialog, DialogHeader } from '../../components/ui/Dialog'
+import { Button } from '@renderer/components/ui/button'
+import { Field, TextInput } from '@renderer/components/ui/form-field'
+import { Dialog, DialogHeader } from '@renderer/components/ui/dialog'
 
 // ---------------------------------------------------------------------------
 // Draft data model (renderer-only, not persisted until Save)

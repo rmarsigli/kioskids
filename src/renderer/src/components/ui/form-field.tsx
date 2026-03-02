@@ -5,7 +5,7 @@
  * TextInput — styled controlled text input with error-state border
  */
 import React from 'react'
-import { cn } from '../../lib/cn'
+import { cn } from '@renderer/lib/cn'
 
 // ---------------------------------------------------------------------------
 // Field

@@ -4,12 +4,12 @@ import type { Tariff, TariffSnapshot } from '@shared/types/db'
 import { calculateSessionTotal } from '@shared/utils/tariff-engine'
 import { join } from 'path'
 import { openDatabase, closeDatabase, getDb } from '../connection'
-import { runMigrations } from '../migrationRunner'
+import { runMigrations } from '../migration-runner'
 import { seedDefaultTariff } from '../seed'
 import { TariffRepository } from '../repositories/tariff.repository'
 import { SessionRepository } from '../repositories/session.repository'
 import { SyncQueueRepository } from '../repositories/syncQueue.repository'
-import { AppConfigRepository } from '../repositories/appConfig.repository'
+import { AppConfigRepository } from '../repositories/app-config.repository'
 
 const MIGRATIONS_DIR = join(__dirname, '../migrations/sql')
 

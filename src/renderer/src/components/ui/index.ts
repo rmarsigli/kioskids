@@ -1,17 +1,17 @@
-export { Button } from './Button'
-export type { } from './Button'
+export { Button } from './button'
+export type { } from './button'
 
-export { Card, CardHeader, CardTitle } from './Card'
+export { Card, CardHeader, CardTitle } from './card'
 
-export { Badge } from './Badge'
-export type { BadgeStatus } from './Badge'
+export { Badge } from './badge'
+export type { BadgeStatus } from './badge'
 
-export { Spinner, SpinnerOverlay } from './Spinner'
+export { Spinner, SpinnerOverlay } from './spinner'
 
-export { EmptyState } from './EmptyState'
+export { EmptyState } from './empty-state'
 
-export { Field, TextInput } from './FormField'
-export type { FieldProps, TextInputProps } from './FormField'
+export { Field, TextInput } from './form-field'
+export type { FieldProps, TextInputProps } from './form-field'
 
-export { Dialog, DialogHeader } from './Dialog'
-export type { DialogProps } from './Dialog'
+export { Dialog, DialogHeader } from './dialog'
+export type { DialogProps } from './dialog'

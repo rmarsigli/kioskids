@@ -2,10 +2,10 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import type { Customer, CustomerWithGuardians } from '@shared/types/db'
-import { Button } from '../../components/ui/Button'
-import { EmptyState } from '../../components/ui/EmptyState'
-import { Spinner } from '../../components/ui/Spinner'
-import { CustomerModal } from './CustomerModal'
+import { Button } from '@renderer/components/ui/button'
+import { EmptyState } from '@renderer/components/ui/empty-state'
+import { Spinner } from '@renderer/components/ui/spinner'
+import { CustomerModal } from './customer-modal'
 
 // Debounce delay for the search input (ms).
 const SEARCH_DEBOUNCE_MS = 300

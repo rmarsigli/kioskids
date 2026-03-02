@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next'
 import { SaveTariffSchema } from '@shared/utils/tariff-schema'
 import { rsToCents, centsToRs } from '@shared/utils/currency'
 import type { Tariff, SaveTariffDto } from '@shared/types/db'
-import { Button } from '../../components/ui/Button'
-import { Field, TextInput } from '../../components/ui/FormField'
-import { cn } from '../../lib/cn'
+import { Button } from '@renderer/components/ui/button'
+import { Field, TextInput } from '@renderer/components/ui/form-field'
+import { cn } from '@renderer/lib/cn'
 
 // ---------------------------------------------------------------------------
 // Form value types — all inputs are strings so HTML inputs stay controlled

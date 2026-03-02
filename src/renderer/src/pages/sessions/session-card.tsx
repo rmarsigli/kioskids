@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { parseTariffSnapshot } from '@shared/types/db'
 import type { Session } from '@shared/types/db'
 import { formatRs } from '@shared/utils/currency'
-import { cn } from '../../lib/cn'
-import { Button } from '../../components/ui/Button'
-import { useSessionTimer } from '../../hooks/useSessionTimer'
+import { cn } from '@renderer/lib/cn'
+import { Button } from '@renderer/components/ui/button'
+import { useSessionTimer } from '@renderer/hooks/use-session-timer'
 
 // ---------------------------------------------------------------------------
 // Types

@@ -1,7 +1,7 @@
 import { app } from 'electron'
 import { join } from 'path'
 import { openDatabase, closeDatabase, getDb } from './connection'
-import { runMigrations } from './migrationRunner'
+import { runMigrations } from './migration-runner'
 import { seedDefaultTariff } from './seed'
 
 // Re-export primitives needed by IPC handlers
@@ -11,10 +11,10 @@ export { getDb, closeDatabase }
 export { TariffRepository } from './repositories/tariff.repository'
 export { SessionRepository } from './repositories/session.repository'
 export { SyncQueueRepository } from './repositories/syncQueue.repository'
-export { AppConfigRepository } from './repositories/appConfig.repository'
+export { AppConfigRepository } from './repositories/app-config.repository'
 export { CustomerRepository } from './repositories/customer.repository'
 export { GuardianRepository } from './repositories/guardian.repository'
-export { GuardianPhoneRepository } from './repositories/guardianPhone.repository'
+export { GuardianPhoneRepository } from './repositories/guardian-phone.repository'
 
 /**
  * Initialises the database: opens the file, runs pending migrations, seeds

@@ -4,9 +4,9 @@ import { toast } from 'sonner'
 import { useTranslation, Trans } from 'react-i18next'
 import type { PreviewCheckoutResult, Session } from '@shared/types/db'
 import { formatRs } from '@shared/utils/currency'
-import { Card, CardHeader, CardTitle } from '../../components/ui/Card'
-import { Button } from '../../components/ui/Button'
-import { Spinner } from '../../components/ui/Spinner'
+import { Card, CardHeader, CardTitle } from '@renderer/components/ui/card'
+import { Button } from '@renderer/components/ui/button'
+import { Spinner } from '@renderer/components/ui/spinner'
 
 // ---------------------------------------------------------------------------
 // Types

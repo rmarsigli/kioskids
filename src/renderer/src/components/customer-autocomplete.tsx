@@ -8,8 +8,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Customer } from '@shared/types/db'
-import { Spinner } from './ui/Spinner'
-import { cn } from '../lib/cn'
+import { Spinner } from '@renderer/components/ui/spinner'
+import { cn } from '@renderer/lib/cn'
 
 const DEBOUNCE_MS = 300
 

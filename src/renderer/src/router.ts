@@ -1,10 +1,10 @@
 import { createRootRoute, createRoute, createRouter, redirect } from '@tanstack/react-router'
-import { AppLayout } from './components/layout/AppLayout'
-import { SessionsPage } from './pages/sessions/SessionsPage'
-import { HistoryPage } from './pages/history/HistoryPage'
-import { TariffsPage } from './pages/tariffs/TariffsPage'
-import { CheckOutPage } from './pages/sessions/CheckOutPage'
-import { CustomersPage } from './pages/customers/CustomersPage'
+import { AppLayout } from '@renderer/components/layout/app-layout'
+import { SessionsPage } from '@renderer/pages/sessions/sessions-page'
+import { HistoryPage } from '@renderer/pages/history/history-page'
+import { TariffsPage } from '@renderer/pages/tariffs/tariffs-page'
+import { CheckOutPage } from '@renderer/pages/sessions/check-out-page'
+import { CustomersPage } from '@renderer/pages/customers/customers-page'
 
 // ---------------------------------------------------------------------------
 // Route definitions

@@ -2,12 +2,12 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import type { Tariff } from '@shared/types/db'
-import { EmptyState } from '../../components/ui/EmptyState'
-import { Button } from '../../components/ui/Button'
-import { Spinner } from '../../components/ui/Spinner'
-import { Dialog, DialogHeader } from '../../components/ui/Dialog'
-import { TariffCard } from './TariffCard'
-import { TariffForm } from './TariffForm'
+import { EmptyState } from '@renderer/components/ui/empty-state'
+import { Button } from '@renderer/components/ui/button'
+import { Spinner } from '@renderer/components/ui/spinner'
+import { Dialog, DialogHeader } from '@renderer/components/ui/dialog'
+import { TariffCard } from './tariff-card'
+import { TariffForm } from './tariff-form'
 
 type FormMode = 'create' | { edit: Tariff } | null
 

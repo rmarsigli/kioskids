@@ -9,11 +9,11 @@ import { toast } from 'sonner'
 import { useTranslation, Trans } from 'react-i18next'
 import { CheckInRequestSchema } from '@shared/utils/check-in-schema'
 import type { Customer, Tariff } from '@shared/types/db'
-import { Button } from '../../components/ui/Button'
-import { Field, TextInput } from '../../components/ui/FormField'
-import { Spinner } from '../../components/ui/Spinner'
-import { CustomerAutocomplete } from '../../components/CustomerAutocomplete'
-import { cn } from '../../lib/cn'
+import { Button } from '@renderer/components/ui/button'
+import { Field, TextInput } from '@renderer/components/ui/form-field'
+import { Spinner } from '@renderer/components/ui/spinner'
+import { CustomerAutocomplete } from '@renderer/components/customer-autocomplete'
+import { cn } from '@renderer/lib/cn'
 
 // ---------------------------------------------------------------------------
 // Form value types — all inputs are strings so HTML inputs remain controlled
