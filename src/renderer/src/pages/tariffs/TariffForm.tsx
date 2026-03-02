@@ -5,7 +5,6 @@ import { SaveTariffSchema } from '@shared/utils/tariff-schema'
 import { rsToCents, centsToRs } from '@shared/utils/currency'
 import type { Tariff, SaveTariffDto } from '@shared/types/db'
 import { Button } from '../../components/ui/Button'
-import { Card, CardHeader, CardTitle } from '../../components/ui/Card'
 import { Field, TextInput } from '../../components/ui/FormField'
 import { cn } from '../../lib/cn'
 
@@ -224,12 +223,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
   }
 
   return (
-    <Card className="max-w-2xl">
-      <CardHeader>
-        <CardTitle>{tariff ? t('tariffs.formTitleEdit') : t('tariffs.formTitleCreate')}</CardTitle>
-      </CardHeader>
-
-      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 pt-2">
+    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
         <Field label={t('tariffs.fieldName')} id="tf-name" error={errors.name}>
           <TextInput
             id="tf-name"
@@ -330,6 +324,5 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
           </Button>
         </div>
       </form>
-    </Card>
   )
 }

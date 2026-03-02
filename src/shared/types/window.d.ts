@@ -33,6 +33,7 @@ declare global {
         saveTariff: (dto: SaveTariffDto) => Promise<IpcResult<Tariff>>
         deactivateTariff: (id: number) => Promise<IpcResult<void>>
         getActiveSessions: () => Promise<IpcResult<Session[]>>
+        getTodaySessions: () => Promise<IpcResult<Session[]>>
         checkOutSession: (dto: CheckOutRequestDto) => Promise<IpcResult<Session>>
         previewCheckout: (id: string) => Promise<IpcResult<PreviewCheckoutResult>>
         cancelSession: (dto: CancelSessionDto) => Promise<IpcResult<Session>>

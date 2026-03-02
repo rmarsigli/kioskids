@@ -13,6 +13,7 @@ export const IPC = {
     CHECK_OUT: 'db:check-out',            // closes an open session — Main sets timestamp
     GET_SESSIONS: 'db:get-sessions',
     GET_ACTIVE_SESSIONS: 'db:get-active-sessions', // returns only open sessions
+    GET_TODAY_SESSIONS: 'db:get-today-sessions',    // returns all sessions from today (any status)
     PREVIEW_CHECKOUT: 'db:preview-checkout',        // read-only cost preview, no DB write
     CANCEL_SESSION: 'db:cancel-session',            // marks session as canceled
     // Customers

@@ -36,6 +36,8 @@ const dbApi = {
     ipcRenderer.invoke(IPC.DB.DEACTIVATE_TARIFF, id),
   getActiveSessions: (): Promise<IpcResult<Session[]>> =>
     ipcRenderer.invoke(IPC.DB.GET_ACTIVE_SESSIONS),
+  getTodaySessions: (): Promise<IpcResult<Session[]>> =>
+    ipcRenderer.invoke(IPC.DB.GET_TODAY_SESSIONS),
   checkOutSession: (dto: CheckOutRequestDto): Promise<IpcResult<Session>> =>
     ipcRenderer.invoke(IPC.DB.CHECK_OUT, dto),
   previewCheckout: (id: string): Promise<IpcResult<PreviewCheckoutResult>> =>

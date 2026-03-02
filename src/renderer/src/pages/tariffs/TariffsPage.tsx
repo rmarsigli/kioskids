@@ -5,6 +5,7 @@ import type { Tariff } from '@shared/types/db'
 import { EmptyState } from '../../components/ui/EmptyState'
 import { Button } from '../../components/ui/Button'
 import { Spinner } from '../../components/ui/Spinner'
+import { Dialog, DialogHeader } from '../../components/ui/Dialog'
 import { TariffCard } from './TariffCard'
 import { TariffForm } from './TariffForm'
 
@@ -56,6 +57,10 @@ export function TariffsPage(): React.JSX.Element {
     }
   }
 
+  const dialogTitle = formMode === 'create'
+    ? t('tariffs.formTitleCreate')
+    : t('tariffs.formTitleEdit')
+
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -69,19 +74,8 @@ export function TariffsPage(): React.JSX.Element {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-surface-900">{t('tariffs.title')}</h1>
-        {formMode === null && (
-          <Button onClick={() => setFormMode('create')}>{t('tariffs.newTariffButton')}</Button>
-        )}
+        <Button size="sm" onClick={() => setFormMode('create')}>{t('tariffs.newTariffButton')}</Button>
       </div>
-
-      {/* Inline form */}
-      {formMode !== null && (
-        <TariffForm
-          tariff={formMode === 'create' ? undefined : formMode.edit}
-          onSuccess={handleSaveSuccess}
-          onCancel={() => setFormMode(null)}
-        />
-      )}
 
       {/* List */}
       {tariffs.length === 0 ? (
@@ -89,11 +83,9 @@ export function TariffsPage(): React.JSX.Element {
           title={t('tariffs.emptyTitle')}
           description={t('tariffs.emptyDescription')}
           action={
-            formMode === null ? (
-              <Button size="lg" onClick={() => setFormMode('create')}>
-                {t('tariffs.emptyAction')}
-              </Button>
-            ) : undefined
+            <Button size="sm" onClick={() => setFormMode('create')}>
+              {t('tariffs.emptyAction')}
+            </Button>
           }
           icon={
             <svg
@@ -125,6 +117,23 @@ export function TariffsPage(): React.JSX.Element {
           ))}
         </div>
       )}
+
+      {/* TariffForm modal */}
+      <Dialog
+        open={formMode !== null}
+        onClose={() => setFormMode(null)}
+        size="lg"
+        ariaLabel={dialogTitle}
+      >
+        <DialogHeader title={dialogTitle} onClose={() => setFormMode(null)} />
+        {formMode !== null && (
+          <TariffForm
+            tariff={formMode === 'create' ? undefined : formMode.edit}
+            onSuccess={handleSaveSuccess}
+            onCancel={() => setFormMode(null)}
+          />
+        )}
+      </Dialog>
     </div>
   )
 }

@@ -27,6 +27,18 @@ export class SessionRepository extends BaseRepository {
       .all(today) as Session[]
   }
 
+  /** Returns ALL sessions from today (open, closed, canceled), newest first. */
+  findAllToday(): Session[] {
+    const today = new Date().toISOString().slice(0, 10)
+    return this.db
+      .prepare(`
+        SELECT * FROM sessions
+         WHERE date(checked_in_at) = ?
+         ORDER BY checked_in_at DESC
+      `)
+      .all(today) as Session[]
+  }
+
   findPendingSync(): Session[] {
     return this.db
       .prepare(`

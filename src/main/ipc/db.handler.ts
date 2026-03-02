@@ -82,6 +82,15 @@ export function registerDbHandlers(): void {
     }
   })
 
+  // Returns all sessions from today (any status) — used by the today's sessions panel.
+  ipcMain.handle(IPC.DB.GET_TODAY_SESSIONS, (): IpcResult<Session[]> => {
+    try {
+      return { success: true, data: sessionRepo.findAllToday() }
+    } catch (err) {
+      return { success: false, error: String(err), code: 'DB_ERROR' }
+    }
+  })
+
   // Closes a session: Main sets the timestamp, calculates totals from the stored snapshot.
   ipcMain.handle(
     IPC.DB.CHECK_OUT,

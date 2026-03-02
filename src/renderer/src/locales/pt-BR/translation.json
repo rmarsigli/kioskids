@@ -1,11 +1,19 @@
 {
   "nav": {
     "checkIn": "Check-in",
-    "sessions": "Sessões",
+    "sessions": "Painel",
     "history": "Histórico",
     "tariffs": "Tarifas",
     "customers": "Clientes",
+    "financeiro": "Financeiro",
     "mainLabel": "Navegação principal"
+  },
+  "header": {
+    "newCheckIn": "Novo Check-in",
+    "newCheckInAriaLabel": "Abrir formulário de novo check-in",
+    "menuAriaLabel": "Abrir menu de navegação",
+    "settingsAriaLabel": "Configurações",
+    "closeMenuAriaLabel": "Fechar menu"
   },
   "common": {
     "back": "Voltar",
@@ -14,6 +22,45 @@
     "edit": "Editar",
     "clear": "Limpar",
     "loading": "Carregando..."
+  },
+  "dashboard": {
+    "activePanelTitle": "Em atividade",
+    "todayPanelTitle": "Sessões de hoje",
+    "emptyActiveTitle": "Nenhuma sessão ativa",
+    "emptyActiveDescription": "Faça um check-in para iniciar uma sessão.",
+    "emptyTodayTitle": "Nenhuma sessão hoje",
+    "emptyTodayDescription": "As sessões do dia aparecerão aqui.",
+    "colTime": "Hora",
+    "colName": "Nome",
+    "colGuardian": "Responsável",
+    "colTariff": "Tarifa",
+    "colDuration": "Duração",
+    "colTotal": "Total",
+    "colStatus": "Status",
+    "statusOpen": "Aberta",
+    "statusClosed": "Encerrada",
+    "statusCanceled": "Cancelada",
+    "durationMinutes": "{{minutes}} min",
+    "errorLoad": "Erro ao carregar sessões: {{error}}"
+  },
+  "activeCard": {
+    "countdownLabel": "restante",
+    "overtimeLabel": "extra",
+    "overtimeBadge": "Tempo extra",
+    "overtimeAriaLabel": "Tempo excedido — cobrança adicional em andamento",
+    "timerAriaLabel": "Tempo: {{display}}",
+    "costAriaLabel": "Custo atual: {{cost}}",
+    "checkOutButton": "Check-Out",
+    "checkOutAriaLabel": "Fazer check-out de {{name}}",
+    "notifyButton": "Notificar",
+    "notifyAriaLabel": "Notificar responsável de {{name}}"
+  },
+  "infoWidget": {
+    "title": "Informações",
+    "appVersion": "Versão {{version}}",
+    "supportLabel": "Suporte",
+    "supportContact": "suporte@kioskids.com.br",
+    "liveClock": "{{time}}"
   },
   "checkIn": {
     "title": "Check-in",
