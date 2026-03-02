@@ -12,13 +12,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "postinstall": "electron-rebuild -f -w better-sqlite3"
   },
   "author": "Rafhael Marsigli",
   "license": "UNLICENSED",
   "pnpm": {
     "onlyBuiltDependencies": [
-      "better-sqlite3",
       "electron",
       "esbuild",
       "electron-winstaller"
