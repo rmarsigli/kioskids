@@ -9,3 +9,6 @@ export type { BadgeStatus } from './Badge'
 export { Spinner, SpinnerOverlay } from './Spinner'
 
 export { EmptyState } from './EmptyState'
+
+export { Field, TextInput } from './FormField'
+export type { FieldProps, TextInputProps } from './FormField'

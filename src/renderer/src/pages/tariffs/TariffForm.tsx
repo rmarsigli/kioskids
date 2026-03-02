@@ -5,6 +5,7 @@ import { rsToCents, centsToRs } from '@shared/utils/currency'
 import type { Tariff, SaveTariffDto } from '@shared/types/db'
 import { Button } from '../../components/ui/Button'
 import { Card, CardHeader, CardTitle } from '../../components/ui/Card'
+import { Field, TextInput } from '../../components/ui/FormField'
 import { cn } from '../../lib/cn'
 
 // ---------------------------------------------------------------------------
@@ -63,47 +64,14 @@ function fromTariff(tariff: Tariff): FormValues {
 }
 
 // ---------------------------------------------------------------------------
-// Micro-components — TextInput, CurrencyInput, NumberInput, Field
+// Local micro-components — CurrencyInput, NumberInput
+// (Field + TextInput are imported from @/components/ui/FormField)
 // ---------------------------------------------------------------------------
 
 // Union of FormValues keys whose value type is `string`.
 type StringField = { [K in keyof FormValues]: FormValues[K] extends string ? K : never }[keyof FormValues]
 // Union of FormValues keys whose value type is `boolean`.
 type BooleanField = { [K in keyof FormValues]: FormValues[K] extends boolean ? K : never }[keyof FormValues]
-
-interface TextInputProps {
-  id: string
-  value: string
-  onChange: (value: string) => void
-  onBlur?: () => void
-  error?: string
-  placeholder?: string
-}
-
-function TextInput({
-  id,
-  value,
-  onChange,
-  onBlur,
-  error,
-  placeholder,
-}: TextInputProps): React.JSX.Element {
-  return (
-    <input
-      id={id}
-      type="text"
-      value={value}
-      placeholder={placeholder}
-      onChange={(e) => onChange(e.target.value)}
-      onBlur={onBlur}
-      className={cn(
-        'w-full rounded-kiosk border bg-surface-100 px-3 py-2 text-base text-surface-900',
-        'outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-1',
-        error ? 'border-danger-500' : 'border-surface-300',
-      )}
-    />
-  )
-}
 
 interface CurrencyInputProps {
   id: string
@@ -188,25 +156,6 @@ function NumberInput({
   )
 }
 
-interface FieldProps {
-  label: string
-  htmlFor: string
-  error?: string
-  children: React.ReactNode
-}
-
-function Field({ label, htmlFor, error, children }: FieldProps): React.JSX.Element {
-  return (
-    <div className="flex flex-col gap-1">
-      <label htmlFor={htmlFor} className="text-sm font-medium text-surface-700">
-        {label}
-      </label>
-      {children}
-      {error && <p className="text-xs text-danger-600">{error}</p>}
-    </div>
-  )
-}
-
 // ---------------------------------------------------------------------------
 // TariffForm — public component
 // ---------------------------------------------------------------------------
@@ -281,7 +230,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
       </CardHeader>
 
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 pt-2">
-        <Field label="Nome" htmlFor="tf-name" error={errors.name}>
+        <Field label="Nome" id="tf-name" error={errors.name}>
           <TextInput
             id="tf-name"
             value={values.name}
@@ -292,7 +241,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
         </Field>
 
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Preco base" htmlFor="tf-base-price" error={errors.base_price}>
+          <Field label="Preco base" id="tf-base-price" error={errors.base_price}>
             <CurrencyInput
               id="tf-base-price"
               value={values.base_price}
@@ -304,7 +253,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
 
           <Field
             label="Minutos inclusos"
-            htmlFor="tf-base-minutes"
+            id="tf-base-minutes"
             error={errors.base_minutes}
           >
             <NumberInput
@@ -319,7 +268,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
 
           <Field
             label="Preco por fracao adicional"
-            htmlFor="tf-frac-price"
+            id="tf-frac-price"
             error={errors.additional_fraction_price}
           >
             <CurrencyInput
@@ -333,7 +282,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
 
           <Field
             label="Minutos por fracao"
-            htmlFor="tf-frac-minutes"
+            id="tf-frac-minutes"
             error={errors.additional_fraction_minutes}
           >
             <NumberInput
@@ -348,7 +297,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
 
           <Field
             label="Tolerancia (minutos)"
-            htmlFor="tf-tolerance"
+            id="tf-tolerance"
             error={errors.tolerance_minutes}
           >
             <NumberInput

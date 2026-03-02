@@ -5,6 +5,7 @@ import { CheckInRequestSchema } from '@shared/utils/check-in-schema'
 import type { Tariff } from '@shared/types/db'
 import { Button } from '../../components/ui/Button'
 import { Card, CardHeader, CardTitle } from '../../components/ui/Card'
+import { Field, TextInput } from '../../components/ui/FormField'
 import { Spinner } from '../../components/ui/Spinner'
 import { cn } from '../../lib/cn'
 
@@ -56,70 +57,9 @@ function validateField(name: keyof FormValues, values: FormValues): string | und
 }
 
 // ---------------------------------------------------------------------------
-// Micro-components
+// Local micro-component — TariffSelect
+// (Field + TextInput are imported from @/components/ui/FormField)
 // ---------------------------------------------------------------------------
-
-interface FieldProps {
-  id: string
-  label: string
-  required?: boolean
-  error?: string
-  children: React.ReactNode
-}
-
-function Field({ id, label, required, error, children }: FieldProps): React.JSX.Element {
-  return (
-    <div className="flex flex-col gap-1">
-      <label htmlFor={id} className="text-sm font-medium text-surface-800">
-        {label}
-        {required && <span className="ml-1 text-danger-500" aria-hidden>*</span>}
-      </label>
-      {children}
-      {error && (
-        <p role="alert" className="text-xs text-danger-600">
-          {error}
-        </p>
-      )}
-    </div>
-  )
-}
-
-interface TextInputProps {
-  id: string
-  value: string
-  onChange: (value: string) => void
-  onBlur?: () => void
-  placeholder?: string
-  error?: string
-  autoFocus?: boolean
-}
-
-function TextInput({
-  id,
-  value,
-  onChange,
-  onBlur,
-  placeholder,
-  error,
-  autoFocus,
-}: TextInputProps): React.JSX.Element {
-  return (
-    <input
-      id={id}
-      type="text"
-      value={value}
-      placeholder={placeholder}
-      autoFocus={autoFocus}
-      onChange={(e) => onChange(e.target.value)}
-      onBlur={onBlur}
-      className={cn(
-        'w-full rounded-kiosk border bg-surface-100 px-3 py-2 text-base text-surface-900',
-        'outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-1',
-        error ? 'border-danger-500' : 'border-surface-300',
-      )}
-    />
-  )
-}
 
 interface TariffSelectProps {
   id: string
