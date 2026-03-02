@@ -22,7 +22,6 @@ export function SessionsPage(): React.JSX.Element {
 
   const [sessions, setSessions] = useState<Session[]>([])
   const [loading, setLoading] = useState<boolean>(true)
-  const [checkingOut, setCheckingOut] = useState<Set<string>>(new Set())
 
   // Stable ref so the interval closure captures the latest function without restarting.
   const loadRef = useRef<() => Promise<void>>()
@@ -52,27 +51,10 @@ export function SessionsPage(): React.JSX.Element {
   // Handlers
   // ---------------------------------------------------------------------------
 
-  const handleCheckOut = useCallback(async (id: string): Promise<void> => {
-    setCheckingOut((prev) => new Set(prev).add(id))
-
-    try {
-      const result = await window.api.db.checkOutSession({ id })
-      if (result.success) {
-        setSessions((prev) => prev.filter((s) => s.id !== id))
-        toast.success('Check-out realizado com sucesso.')
-      } else {
-        toast.error(`Erro no check-out: ${result.error}`)
-      }
-    } catch (err) {
-      toast.error(`Erro inesperado: ${String(err)}`)
-    } finally {
-      setCheckingOut((prev) => {
-        const next = new Set(prev)
-        next.delete(id)
-        return next
-      })
-    }
-  }, [])
+  // Navigate to the dedicated checkout page — billing confirmation happens there.
+  const handleCheckOut = useCallback((id: string): void => {
+    void navigate({ to: '/sessions/$id/checkout', params: { id } })
+  }, [navigate])
 
   const handleNotify = useCallback((id: string): void => {
     // WhatsApp deep-link with session context — full implementation in TASK-011.
@@ -136,7 +118,6 @@ export function SessionsPage(): React.JSX.Element {
                 session={session}
                 onCheckOut={handleCheckOut}
                 onNotify={handleNotify}
-                isCheckingOut={checkingOut.has(session.id)}
               />
             </li>
           ))}

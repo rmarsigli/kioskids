@@ -52,9 +52,10 @@ describe('runMigrations', () => {
       .prepare('SELECT filename FROM _migrations ORDER BY id')
       .all() as Array<{ filename: string }>
 
-    expect(rows).toHaveLength(2)
+    expect(rows).toHaveLength(3)
     expect(rows[0].filename).toBe('001_initial_schema.sql')
     expect(rows[1].filename).toBe('002_sessions_guardian_fields.sql')
+    expect(rows[2].filename).toBe('003_sessions_cancel_notes.sql')
   })
 
   it('should be idempotent — running twice does not throw or duplicate records', () => {
@@ -64,7 +65,7 @@ describe('runMigrations', () => {
       .prepare('SELECT filename FROM _migrations')
       .all() as Array<{ filename: string }>
 
-    expect(rows).toHaveLength(2)
+    expect(rows).toHaveLength(3)
   })
 })
 
@@ -277,6 +278,56 @@ describe('SessionRepository', () => {
     const result = sessionRepo.checkOut(dto)
     expect(result?.status).toBe('closed')
     expect(result?.total_cents).toBe(500) // unchanged
+  })
+
+  it('should cancel an open session and set status to canceled', () => {
+    const { snapshot, tariff } = getDefaultSnapshot()
+    const sessionRepo = new SessionRepository()
+    const session = sessionRepo.checkIn(
+      { id: randomUUID(), child_name: 'Pedro', tariff_id: tariff.id },
+      snapshot,
+    )
+
+    const canceled = sessionRepo.cancel(session.id, 'Cancelado pelo operador')
+
+    expect(canceled?.status).toBe('canceled')
+    expect(canceled?.notes).toBe('Cancelado pelo operador')
+    expect(canceled?.total_cents).toBeNull()
+    expect(canceled?.checked_out_at).toBeNull()
+  })
+
+  it('should not cancel a session that is already closed', () => {
+    const { snapshot, tariff } = getDefaultSnapshot()
+    const sessionRepo = new SessionRepository()
+    const session = sessionRepo.checkIn(
+      { id: randomUUID(), child_name: 'Lucia', tariff_id: tariff.id },
+      snapshot,
+    )
+
+    sessionRepo.checkOut({
+      id: session.id,
+      checked_out_at: new Date().toISOString(),
+      duration_minutes: 10,
+      total_cents: 500,
+    })
+
+    // Cancel must be a no-op (WHERE status = 'open' guard)
+    const result = sessionRepo.cancel(session.id, 'late cancel attempt')
+    expect(result?.status).toBe('closed')
+    expect(result?.notes).toBeNull()
+  })
+
+  it('should cancel without notes when notes is omitted', () => {
+    const { snapshot, tariff } = getDefaultSnapshot()
+    const sessionRepo = new SessionRepository()
+    const session = sessionRepo.checkIn(
+      { id: randomUUID(), child_name: 'Bruno', tariff_id: tariff.id },
+      snapshot,
+    )
+
+    const canceled = sessionRepo.cancel(session.id)
+    expect(canceled?.status).toBe('canceled')
+    expect(canceled?.notes).toBeNull()
   })
 })
 

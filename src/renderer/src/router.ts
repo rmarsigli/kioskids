@@ -4,6 +4,7 @@ import { SessionsPage } from './pages/sessions/SessionsPage'
 import { CheckInPage } from './pages/check-in/CheckInPage'
 import { HistoryPage } from './pages/history/HistoryPage'
 import { TariffsPage } from './pages/tariffs/TariffsPage'
+import { CheckOutPage } from './pages/sessions/CheckOutPage'
 
 // ---------------------------------------------------------------------------
 // Route definitions
@@ -33,6 +34,12 @@ const sessionsRoute = createRoute({
   component: SessionsPage,
 })
 
+export const checkOutRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/sessions/$id/checkout',
+  component: CheckOutPage,
+})
+
 const historyRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/history',
@@ -53,6 +60,7 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   checkInRoute,
   sessionsRoute,
+  checkOutRoute,
   historyRoute,
   tariffsRoute,
 ])

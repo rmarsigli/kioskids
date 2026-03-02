@@ -4,7 +4,7 @@
 
 import { TariffSnapshotSchema } from '@shared/utils/tariff-engine'
 
-export type SessionStatus = 'open' | 'closed'
+export type SessionStatus = 'open' | 'closed' | 'canceled'
 export type SyncStatus = 'pending' | 'synced' | 'error'
 
 // Re-export so consumers that import from db.ts don't need a second import path.
@@ -56,10 +56,35 @@ export interface Session {
   checked_out_at: string | null
   duration_minutes: number | null
   total_cents: number | null
+  notes: string | null           // populated on cancel (migration 003)
   status: SessionStatus
   sync_status: SyncStatus
   created_at: string
   updated_at: string
+}
+
+// ---------------------------------------------------------------------------
+// Checkout preview
+// ---------------------------------------------------------------------------
+
+/**
+ * Returned by the `db:preview-checkout` handler.
+ * Computed read-only — no DB writes occur.
+ */
+export interface PreviewCheckoutResult {
+  session_id: string
+  child_name: string
+  guardian_name: string | null
+  tariff_name: string
+  checked_in_at: string
+  elapsed_minutes: number
+  preview_total: number  // integer cents
+}
+
+/** Payload the Renderer sends to cancel a session. */
+export interface CancelSessionDto {
+  id: string
+  notes?: string
 }
 
 export interface CheckInDto {

@@ -105,6 +105,25 @@ export class SessionRepository extends BaseRepository {
     return this.findById(dto.id)
   }
 
+  /**
+   * Cancels an open session. Does NOT set duration_minutes or total_cents —
+   * canceled sessions are not billed. Stores an optional reason in `notes`.
+   * The WHERE clause guards against double-canceling a closed/already-canceled row.
+   */
+  cancel(id: string, notes?: string | null): Session | undefined {
+    const now = nowIso()
+    this.db
+      .prepare(`
+        UPDATE sessions
+           SET status     = 'canceled',
+               notes      = ?,
+               updated_at = ?
+         WHERE id = ? AND status = 'open'
+      `)
+      .run(notes ?? null, now, id)
+    return this.findById(id)
+  }
+
   markSynced(id: string): void {
     this.updateSyncStatus(id, 'synced')
   }

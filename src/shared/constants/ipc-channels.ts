@@ -14,6 +14,8 @@ export const IPC = {
     CHECKOUT_SESSION: 'db:checkout-session',   // closes an open session from the dashboard
     GET_SESSIONS: 'db:get-sessions',
     GET_ACTIVE_SESSIONS: 'db:get-active-sessions', // returns only open sessions
+    PREVIEW_CHECKOUT: 'db:preview-checkout',        // read-only cost preview, no DB write
+    CANCEL_SESSION: 'db:cancel-session',            // marks session as canceled
   },
   HW: {
     PRINT_RECEIPT: 'hw:print-receipt',

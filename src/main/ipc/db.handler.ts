@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { z } from 'zod'
 import { IPC } from '@shared/constants/ipc-channels'
 import type { IpcResult } from '@shared/types/result'
-import type { Tariff, Session } from '@shared/types/db'
+import type { Tariff, Session, PreviewCheckoutResult } from '@shared/types/db'
 import { parseTariffSnapshot } from '@shared/types/db'
 import { SaveTariffSchema } from '@shared/utils/tariff-schema'
 import { CheckInRequestSchema } from '@shared/utils/check-in-schema'
@@ -16,6 +16,15 @@ const sessionRepo = new SessionRepository()
 
 /** Zod schema for the checkout request coming from the Renderer. */
 const CheckoutRequestSchema = z.object({ id: z.string().uuid() })
+
+/** Zod schema for the preview-checkout request (read-only). */
+const PreviewCheckoutSchema = z.object({ id: z.string().uuid() })
+
+/** Zod schema for canceling a session with an optional human-readable reason. */
+const CancelSessionSchema = z.object({
+  id: z.string().uuid(),
+  notes: z.string().max(500).optional(),
+})
 
 export function registerDbHandlers(): void {
   // Opens a new session: validates input, confirms tariff is still active,
@@ -115,6 +124,95 @@ export function registerDbHandlers(): void {
         }
 
         return { success: true, data: closed }
+      } catch (err) {
+        return { success: false, error: String(err), code: 'DB_ERROR' }
+      }
+    },
+  )
+
+  // Returns estimated billing total and elapsed time WITHOUT writing any data.
+  // The Renderer uses this to show a confirmation screen before the real checkout.
+  // Returns CLOCK_ERROR when the system clock appears to have gone backwards.
+  ipcMain.handle(
+    IPC.DB.PREVIEW_CHECKOUT,
+    (_, dto: unknown): IpcResult<PreviewCheckoutResult> => {
+      const parsed = PreviewCheckoutSchema.safeParse(dto)
+      if (!parsed.success) {
+        return { success: false, error: 'ID de sessao invalido.', code: 'VALIDATION_ERROR' }
+      }
+
+      try {
+        const session = sessionRepo.findById(parsed.data.id)
+        if (!session) {
+          return { success: false, error: 'Sessao nao encontrada.', code: 'NOT_FOUND' }
+        }
+        if (session.status !== 'open') {
+          return { success: false, error: 'Sessao ja encerrada.', code: 'SESSION_CLOSED' }
+        }
+
+        const tariff = parseTariffSnapshot(session.tariff_snapshot)
+        const nowStr = nowIso()
+        const durationMs =
+          new Date(nowStr).getTime() - new Date(session.checked_in_at).getTime()
+
+        if (durationMs < 0) {
+          return {
+            success: false,
+            error: 'Relogio do sistema incorreto (checkout antes do check-in).',
+            code: 'CLOCK_ERROR',
+          }
+        }
+
+        const elapsedMinutes = Math.ceil(durationMs / 60_000)
+        const previewTotal = calculateSessionTotal(session.checked_in_at, nowStr, tariff)
+
+        return {
+          success: true,
+          data: {
+            session_id: session.id,
+            child_name: session.child_name,
+            guardian_name: session.guardian_name,
+            tariff_name: tariff.name,
+            checked_in_at: session.checked_in_at,
+            elapsed_minutes: elapsedMinutes,
+            preview_total: previewTotal,
+          },
+        }
+      } catch (err) {
+        return { success: false, error: String(err), code: 'DB_ERROR' }
+      }
+    },
+  )
+
+  // Marks an open session as canceled. Does not set billing totals.
+  // Stores an optional human-readable reason in the `notes` column.
+  ipcMain.handle(
+    IPC.DB.CANCEL_SESSION,
+    (_, dto: unknown): IpcResult<Session> => {
+      const parsed = CancelSessionSchema.safeParse(dto)
+      if (!parsed.success) {
+        return {
+          success: false,
+          error: parsed.error.errors.map((e) => e.message).join('; '),
+          code: 'VALIDATION_ERROR',
+        }
+      }
+
+      try {
+        const session = sessionRepo.findById(parsed.data.id)
+        if (!session) {
+          return { success: false, error: 'Sessao nao encontrada.', code: 'NOT_FOUND' }
+        }
+        if (session.status !== 'open') {
+          return { success: false, error: 'Sessao ja encerrada.', code: 'SESSION_CLOSED' }
+        }
+
+        const canceled = sessionRepo.cancel(parsed.data.id, parsed.data.notes)
+        if (!canceled) {
+          return { success: false, error: 'Sessao nao encontrada.', code: 'NOT_FOUND' }
+        }
+
+        return { success: true, data: canceled }
       } catch (err) {
         return { success: false, error: String(err), code: 'DB_ERROR' }
       }
