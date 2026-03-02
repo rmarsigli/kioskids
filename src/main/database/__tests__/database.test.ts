@@ -175,6 +175,22 @@ describe('SessionRepository', () => {
     expect(session.checked_out_at).toBeNull()
   })
 
+  it('should atomically create a sync_queue row on check-in (offline-first contract)', () => {
+    const { snapshot, tariff } = getDefaultSnapshot()
+    const session = new SessionRepository().checkIn(
+      { id: randomUUID(), child_name: 'Carlos', guardian_name: 'Pai', tariff_id: tariff.id },
+      snapshot,
+    )
+    const queueRepo = new SyncQueueRepository()
+    const pending = queueRepo.findPending()
+    expect(pending).toHaveLength(1)
+    expect(pending[0].session_id).toBe(session.id)
+    expect(pending[0].attempts).toBe(0)
+    const payload = JSON.parse(pending[0].payload) as Record<string, unknown>
+    expect(payload.child_name).toBe('Carlos')
+    expect(payload.guardian_name).toBe('Pai')
+  })
+
   it('should check out an open session and mark it closed', () => {
     const { snapshot, tariff } = getDefaultSnapshot()
     const sessionRepo = new SessionRepository()
@@ -302,7 +318,8 @@ describe('SyncQueueRepository', () => {
 
     expect(entry.session_id).toBe(session.id)
     expect(entry.attempts).toBe(0)
-    expect(queueRepo.findPending()).toHaveLength(1)
+    // checkIn atomically inserts 1 sync_queue row; enqueue() adds a second.
+    expect(queueRepo.findPending()).toHaveLength(2)
   })
 })
 

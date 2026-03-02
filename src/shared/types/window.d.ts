@@ -1,6 +1,6 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
 import type { IpcResult } from './result'
-import type { Tariff, Session, AppConfig, SaveTariffDto, CheckOutRequestDto } from './db'
+import type { Tariff, Session, AppConfig, SaveTariffDto, CheckOutRequestDto, CheckInRequestDto } from './db'
 
 // Augments the global Window interface with the contextBridge API surface.
 // window.electron — standard IPC utilities from @electron-toolkit/preload
@@ -10,6 +10,7 @@ declare global {
     electron: ElectronAPI
     api: {
       db: {
+        checkIn: (dto: CheckInRequestDto) => Promise<IpcResult<Session>>
         getTariffs: () => Promise<IpcResult<Tariff[]>>
         getAllTariffs: () => Promise<IpcResult<Tariff[]>>
         saveTariff: (dto: SaveTariffDto) => Promise<IpcResult<Tariff>>

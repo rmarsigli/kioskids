@@ -25,20 +25,3 @@ nsis:
 publish:
   provider: github
   releaseType: release
-
-
-win:
-  target:
-    - target: nsis
-      arch:
-        - x64
-  artifactName: ${productName}-${version}-setup.${ext}
-
-nsis:
-  oneClick: false
-  allowToChangeInstallationDirectory: true
-  deleteAppDataOnUninstall: false
-
-publish:
-  provider: github
-  releaseType: release

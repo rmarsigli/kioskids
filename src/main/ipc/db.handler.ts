@@ -1,11 +1,13 @@
 import { ipcMain } from 'electron'
+import { randomUUID } from 'node:crypto'
 import { z } from 'zod'
 import { IPC } from '@shared/constants/ipc-channels'
 import type { IpcResult } from '@shared/types/result'
 import type { Tariff, Session } from '@shared/types/db'
 import { parseTariffSnapshot } from '@shared/types/db'
 import { SaveTariffSchema } from '@shared/utils/tariff-schema'
-import { calculateSessionTotal } from '@shared/utils/tariff-engine'
+import { CheckInRequestSchema } from '@shared/utils/check-in-schema'
+import { calculateSessionTotal, TariffSnapshotSchema } from '@shared/utils/tariff-engine'
 import { nowIso } from '@shared/utils/time'
 import { TariffRepository, SessionRepository } from '../database'
 
@@ -16,6 +18,55 @@ const sessionRepo = new SessionRepository()
 const CheckoutRequestSchema = z.object({ id: z.string().uuid() })
 
 export function registerDbHandlers(): void {
+  // Opens a new session: validates input, confirms tariff is still active,
+  // then inserts session + sync_queue row in a single transaction.
+  ipcMain.handle(
+    IPC.DB.CHECK_IN,
+    (_, dto: unknown): IpcResult<Session> => {
+      const parsed = CheckInRequestSchema.safeParse(dto)
+      if (!parsed.success) {
+        return {
+          success: false,
+          error: parsed.error.errors.map((e) => e.message).join('; '),
+          code: 'VALIDATION_ERROR',
+        }
+      }
+
+      try {
+        const tariff = tariffRepo.findById(parsed.data.tariff_id)
+        if (!tariff) {
+          return { success: false, error: 'Tarifa nao encontrada.', code: 'NOT_FOUND' }
+        }
+        if (tariff.is_active !== 1) {
+          return {
+            success: false,
+            error: 'A tarifa selecionada nao esta mais ativa.',
+            code: 'TARIFF_INACTIVE',
+          }
+        }
+
+        const snapshot = TariffSnapshotSchema.parse({
+          id: tariff.id,
+          name: tariff.name,
+          base_price: tariff.base_price,
+          base_minutes: tariff.base_minutes,
+          additional_fraction_price: tariff.additional_fraction_price,
+          additional_fraction_minutes: tariff.additional_fraction_minutes,
+          tolerance_minutes: tariff.tolerance_minutes,
+        })
+
+        const session = sessionRepo.checkIn(
+          { id: randomUUID(), ...parsed.data },
+          snapshot,
+        )
+
+        return { success: true, data: session }
+      } catch (err) {
+        return { success: false, error: String(err), code: 'DB_ERROR' }
+      }
+    },
+  )
+
   // Returns all open sessions — used by the live dashboard.
   ipcMain.handle(IPC.DB.GET_ACTIVE_SESSIONS, (): IpcResult<Session[]> => {
     try {
