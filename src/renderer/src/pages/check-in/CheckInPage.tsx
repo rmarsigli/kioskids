@@ -44,15 +44,14 @@ const SUBMIT_DEBOUNCE_MS = 2_000
 function validateField(name: keyof FormValues, values: FormValues): string | undefined {
   if (name === 'guardian_contact') return undefined
 
-  type SafeParseResult = { success: boolean; error?: { errors: Array<{ message: string }> } }
-  const fieldChecks: Partial<Record<keyof FormValues, () => SafeParseResult>> = {
+  const fieldChecks: Partial<Record<keyof FormValues, () => { success: boolean; error?: { issues: Array<{ message: string }> } }>> = {
     child_name: () => CheckInRequestSchema.shape.child_name.safeParse(values.child_name),
     guardian_name: () => CheckInRequestSchema.shape.guardian_name.safeParse(values.guardian_name),
     tariff_id: () => CheckInRequestSchema.shape.tariff_id.safeParse(Number(values.tariff_id) || 0),
   }
 
   const result = fieldChecks[name]?.()
-  if (result && !result.success) return result.error?.errors[0]?.message
+  if (result && !result.success) return result.error?.issues[0]?.message
   return undefined
 }
 
@@ -168,7 +167,7 @@ export function CheckInPage(): React.JSX.Element {
     const parsed = CheckInRequestSchema.safeParse(dto)
     if (!parsed.success) {
       const newErrors: FormErrors = {}
-      for (const issue of parsed.error.errors) {
+      for (const issue of parsed.error.issues) {
         const field = issue.path[0] as keyof FormValues
         if (field && !newErrors[field]) newErrors[field] = issue.message
       }

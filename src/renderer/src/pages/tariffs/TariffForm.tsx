@@ -188,9 +188,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
       ...prev,
       [field]: result.success
         ? undefined
-        : (result.error.flatten().fieldErrors[
-            field as keyof typeof result.error.flatten.fieldErrors
-          ] as string[] | undefined)?.[0],
+        : result.error.flatten().fieldErrors[field as string]?.[0],
     }))
   }
 
@@ -203,7 +201,7 @@ export function TariffForm({ tariff, onSuccess, onCancel }: TariffFormProps): Re
       const fe = parsed.error.flatten().fieldErrors
       setErrors(
         Object.fromEntries(
-          Object.entries(fe).map(([k, msgs]) => [k, (msgs as string[])[0]]),
+          Object.entries(fe).map(([k, msgs]) => [k, msgs?.[0]]),
         ) as FormErrors,
       )
       return

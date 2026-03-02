@@ -33,7 +33,7 @@ export function registerDbHandlers(): void {
       if (!parsed.success) {
         return {
           success: false,
-          error: parsed.error.errors.map((e) => e.message).join('; '),
+          error: parsed.error.issues.map((e) => e.message).join('; '),
           code: 'VALIDATION_ERROR',
         }
       }
@@ -190,7 +190,7 @@ export function registerDbHandlers(): void {
       if (!parsed.success) {
         return {
           success: false,
-          error: parsed.error.errors.map((e) => e.message).join('; '),
+          error: parsed.error.issues.map((e) => e.message).join('; '),
           code: 'VALIDATION_ERROR',
         }
       }
@@ -242,7 +242,7 @@ export function registerDbHandlers(): void {
       if (!parsed.success) {
         return {
           success: false,
-          error: parsed.error.errors.map((e) => e.message).join('; '),
+          error: parsed.error.issues.map((e) => e.message).join('; '),
           code: 'VALIDATION_ERROR',
         }
       }

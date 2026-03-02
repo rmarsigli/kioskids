@@ -20,6 +20,8 @@ function createWindow(): void {
   // Prevent white flash on startup
   win.on('ready-to-show', () => {
     win.show()
+    // Open DevTools automatically in dev so errors are immediately visible.
+    if (is.dev) win.webContents.openDevTools()
   })
 
   // Open external links in the system browser, not inside Electron
